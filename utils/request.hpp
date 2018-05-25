@@ -8,9 +8,6 @@ using namespace std;
 
 #define BUFSIZE 8096
 
-#define SERVER_NAME "Web++"
-#define SERVER_VERSION "1.0.1"
-
 class Request {
 public:
   Request(string method);

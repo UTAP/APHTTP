@@ -33,17 +33,23 @@ string Request::getBody() {
 }
 
 void Request::log() {
-  cout << "------- Request --------" << endl;
-  cout << "Method: " << (method ? "POST" : "GET") << endl;
-  cout << "Path: " << path << endl;
-  cout << "Headers: " << endl;
+  const string NC = "\033[0;39m";
+  const string K = "\033[1m";
+  const string H = "\033[33;1m";
+  string log = "";
+  log += H + string("------- Request --------") + NC + string("\n");
+  log +=
+      K + string("Method:\t") + NC + (method ? "POST" : "GET") + string("\n");
+  log += K + string("Path:\t") + NC + path + string("\n");
+  log += K + string("Headers:") + NC + string("\n");
   for (auto it = headers.begin(); it != headers.end(); it++)
-    cout << "  " << it->first << ": " << it->second << endl;
-  cout << "Query: " << endl;
+    log += "  " + it->first + ": " + it->second + string("\n");
+  log += K + string("Query:") + NC + string("\n");
   for (auto it = query.begin(); it != query.end(); it++)
-    cout << "  " << it->first << ": " << it->second << endl;
-  cout << "Body: " << endl;
+    log += "  " + it->first + ": " + it->second + string("\n");
+  log += K + string("Body:") + NC + string("\n");
   for (auto it = body.begin(); it != body.end(); it++)
-    cout << "  " << it->first << ": " << it->second << endl;
-  cout << "------------------------" << endl;
+    log += "  " + it->first + ": " + it->second + string("\n");
+  log += H + string("------------------------") + NC + string("\n");
+  cerr << log << endl;
 }
