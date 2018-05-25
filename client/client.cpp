@@ -19,10 +19,6 @@ void OnComplete(const happyhttp::Response *r, void *userdata) {
   Response *res = (Response *)userdata;
 }
 
-Client::Client() : ip("127.0.0.1"), port(80) {}
-
-Client::Client(string _ip) : ip(_ip), port(80) {}
-
 Client::Client(string _ip, int _port) : ip(_ip), port(_port) {}
 
 Response *Client::get(Request r) {

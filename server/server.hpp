@@ -20,7 +20,7 @@ using namespace std;
 
 class RequestHandler {
 public:
-  virtual Response *callback(Request *req) {}
+  virtual Response *callback(Request *req);
 };
 
 class Server {

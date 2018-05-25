@@ -10,8 +10,6 @@ using namespace std;
 
 #define BUFSIZE 8096
 
-#define SERVER_NAME "AP HTTP Server"
-
 class Response {
 public:
   Response();

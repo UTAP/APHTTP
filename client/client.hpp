@@ -10,13 +10,11 @@ void OnData(const happyhttp::Response *r, void *userdata,
 void OnComplete(const happyhttp::Response *r, void *userdata);
 class Client {
 private:
-  int port;
   string ip;
+  int port;
 
 public:
-  Client();
-  Client(string _ip);
-  Client(string _ip, int _port);
+  Client(string _ip = "127.0.0.1", int _port = 80);
   Response *get(Request r);
   Response *post(Request r);
 };

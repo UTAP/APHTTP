@@ -84,8 +84,6 @@ string charArrayToString(char *arr, int size) {
 }
 
 void parseBody(Request *req, string line) {
-  int i = 0;
-  char *pch;
   vector<string> body;
   split(line, "&", 10, &body);
   if (body.size() > 1) {
@@ -178,7 +176,7 @@ void Server::run() {
       parseBody(req, charArrayToString(body, cl));
     }
     Response *res = new Response();
-    int i = 0;
+    size_t i = 0;
     for (; i < routes.size(); i++) {
       if (routes[i]->isMatch(req->getMethod(), req->getPath())) {
         res = routes[i]->handle(req);
@@ -189,7 +187,8 @@ void Server::run() {
       res = notFoundHandler->callback(req);
     }
     char *header_buffer = res->print();
-    ssize_t t;
-    t = write(newsc, header_buffer, strlen(header_buffer));
+    ssize_t t = write(newsc, header_buffer, strlen(header_buffer));
   }
 }
+
+Response *RequestHandler::callback(Request *req) { return NULL; }

@@ -1,4 +1,5 @@
 #include "response.hpp"
+#include <cstring>
 
 Response::Response() {
   code = 200;
@@ -25,7 +26,6 @@ char *Response::print() {
     h += it->first + ": " + it->second + "\r\n";
   h += "\r\n";
   h += body;
-  size_t body_len = strlen(body.c_str());
   strcpy(header_buffer, h.c_str());
   return header_buffer;
 }

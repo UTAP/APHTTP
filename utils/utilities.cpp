@@ -11,7 +11,7 @@ string readFile(const char *filename) {
     length = sizeof(buffer);
 
   infile.read(buffer, length);
-  for (int i = 0; i < length; i++) {
+  for (size_t i = 0; i < length; i++) {
     s += buffer[i];
   }
   return s;
