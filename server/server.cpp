@@ -39,7 +39,7 @@ Request *parse_headers(char *headers) {
 
       split(line, " ", 3, &R);
       if (R.size() != 3) {
-        // throw error
+        throw Exception("Invalid header");
       }
       req = new Request(R[0]);
       req->setPath(R[1]);
@@ -74,13 +74,6 @@ Request *parse_headers(char *headers) {
     }
   }
   return req;
-}
-
-string charArrayToString(char *arr, int size) {
-  string result = "";
-  for (int i = 0; i < size; i++)
-    result += arr[i];
-  return result;
 }
 
 void parseBody(Request *req, string line) {
@@ -150,30 +143,26 @@ void Server::run() {
   socklen_t clilen;
   clilen = sizeof(cli_addr);
   int newsc;
+
   while (true) {
     newsc = accept(sc, (struct sockaddr *)&cli_addr, &clilen);
     if (newsc < 0)
       throw Exception("Error on accept");
-    char headers[BUFSIZE + 1];
 
-    fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(newsc, &fds);
+    char headers[BUFSIZE + 1];
     long ret = read(newsc, headers, BUFSIZE);
-    // cout << charArrayToString(headers, ret) << endl;
+    headers[ret >= 0 ? ret : 0] = 0;
     Request *req = parse_headers(headers);
     int cl = 0;
     if (req->getHeader("Content-Length") != "")
-      stoi(req->getHeader("Content-Length"));
+      cl = stoi(req->getHeader("Content-Length"));
     struct timeval timeout;
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
-    int rc = select(sizeof(fds) * 8, &fds, NULL, NULL, &timeout);
-    if (rc) {
-      char body[cl + 1];
-      ret = read(newsc, body, cl);
-      parseBody(req, charArrayToString(body, cl));
-    }
+    char body[cl + 1];
+    ret = read(newsc, body, cl);
+    body[ret >= 0 ? ret : 0] = 0;
+    parseBody(req, string(body));
     Response *res = new Response();
     size_t i = 0;
     for (; i < routes.size(); i++) {
@@ -187,6 +176,7 @@ void Server::run() {
     }
     char *header_buffer = res->print();
     ssize_t t = write(newsc, header_buffer, strlen(header_buffer));
+    close(newsc);
   }
 }
 

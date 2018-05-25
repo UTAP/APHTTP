@@ -10,7 +10,6 @@ void OnBegin(const happyhttp::Response *r, void *userdata) {
 void OnData(const happyhttp::Response *r, void *userdata,
             const unsigned char *data, int n) {
   Response *res = (Response *)userdata;
-  fwrite(data, 1, n, stdout);
   const char *s = reinterpret_cast<const char *>(data);
   res->setBody(string(s));
 }
@@ -32,6 +31,7 @@ Response *Client::get(Request r) {
     conn.pump();
   return res;
 }
+
 Response *Client::post(Request r) {
   const char *headers[] = {"Connection",
                            "close",

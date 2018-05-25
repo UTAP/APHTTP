@@ -10,7 +10,8 @@ int main(int argc, char *argv[]) {
   Client *c = new Client("localhost", 5000);
   req.setPath("/login");
   req.setBodyParam("username", "AP");
-  req.setBodyParam("password", "p@ss");
+  req.setBodyParam("password", "pass");
+  req.log();
   Response *res = c->post(req);
   res->log();
 }
