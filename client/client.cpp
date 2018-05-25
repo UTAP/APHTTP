@@ -14,9 +14,7 @@ void OnData(const happyhttp::Response *r, void *userdata,
   res->setBody(string(s));
 }
 
-void OnComplete(const happyhttp::Response *r, void *userdata) {
-  Response *res = (Response *)userdata;
-}
+void OnComplete(const happyhttp::Response *r, void *userdata) {}
 
 Client::Client(string _ip, int _port) : ip(_ip), port(_port) {}
 

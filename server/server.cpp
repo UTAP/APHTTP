@@ -159,7 +159,7 @@ void Server::run() {
     struct timeval timeout;
     timeout.tv_sec = 1;
     timeout.tv_usec = 0;
-    char body[cl + 1];
+    char body[BUFSIZE + 1];
     ret = read(newsc, body, cl);
     body[ret >= 0 ? ret : 0] = 0;
     parseBody(req, string(body));
@@ -175,7 +175,7 @@ void Server::run() {
       res = notFoundHandler->callback(req);
     }
     char *header_buffer = res->print();
-    ssize_t t = write(newsc, header_buffer, strlen(header_buffer));
+    write(newsc, header_buffer, strlen(header_buffer));
     close(newsc);
   }
 }
