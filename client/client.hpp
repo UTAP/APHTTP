@@ -14,7 +14,7 @@ private:
   int port;
 
 public:
-  Client(string _ip = "127.0.0.1", int _port = 80);
+  Client(string _ip = "localhost", int _port = 80);
   Response *get(Request r);
   Response *post(Request r);
 };
