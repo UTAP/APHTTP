@@ -162,8 +162,7 @@ void Server::run() {
     FD_ZERO(&fds);
     FD_SET(newsc, &fds);
     long ret = read(newsc, headers, BUFSIZE);
-    cout << charArrayToString(headers, ret) << endl;
-    continue;
+    // cout << charArrayToString(headers, ret) << endl;
     Request *req = parse_headers(headers);
     int cl = 0;
     if (req->getHeader("Content-Length") != "")
