@@ -53,3 +53,26 @@ void Request::log() {
   log += H + string("------------------------") + NC + string("\n");
   cerr << log << endl;
 }
+
+map<string, string> Request::getHeaders() {
+  vector<string> res;
+  for (map<string, string>::iterator i = headers.begin(); i != headers.end();
+       i++) {
+    res.push_back(i->first);
+    res.push_back(i->second);
+  }
+  return headers;
+}
+
+string Request::getQueryString() {
+  if (query.empty())
+    return "";
+  string res = "?";
+  for (map<string, string>::iterator i = query.begin(); i != query.end(); i++) {
+    res += i->first;
+    res += "=";
+    res += i->second;
+    res += "&";
+  }
+  return res;
+}

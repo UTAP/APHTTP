@@ -19,11 +19,23 @@ void OnComplete(const happyhttp::Response *r, void *userdata) {}
 Client::Client(string _ip, int _port) : ip(_ip), port(_port) {}
 
 Response *Client::get(Request r) {
+  map<string, string> headers_map = r.getHeaders();
+  const char *headers[2 * headers_map.size() + 1];
+  int j = 0;
+  for (map<string, string>::iterator i = headers_map.begin();
+       i != headers_map.end(); i++, j += 2) {
+    headers[j] = (i->first).c_str();
+    headers[j + 1] = (i->second).c_str();
+  }
+  headers[j] = 0;
+
   Response *res = new Response();
   happyhttp::Connection conn(ip.c_str(), port);
   conn.setcallbacks(OnBegin, OnData, OnComplete, res);
 
-  conn.request("GET", r.getPath().c_str(), 0, 0, 0);
+  conn.request("GET", (r.getPath() + r.getQueryString()).c_str(), 0,
+               (const unsigned char *)(r.getBody().c_str()),
+               strlen(r.getBody().c_str()));
 
   while (conn.outstanding())
     conn.pump();
@@ -31,18 +43,23 @@ Response *Client::get(Request r) {
 }
 
 Response *Client::post(Request r) {
-  const char *headers[] = {"Connection",
-                           "close",
-                           "Content-type",
-                           "application/x-www-form-urlencoded",
-                           "Accept",
-                           "text/plain",
-                           0};
+  r.setHeader("Connection", "close");
+  r.setHeader("Content-type", "application/x-www-form-urlencoded");
+  r.setHeader("Accept", "text/plain");
+  map<string, string> headers_map = r.getHeaders();
+  const char *headers[2 * headers_map.size() + 1];
+  int j = 0;
+  for (map<string, string>::iterator i = headers_map.begin();
+       i != headers_map.end(); i++, j += 2) {
+    headers[j] = (i->first).c_str();
+    headers[j + 1] = (i->second).c_str();
+  }
+  headers[j] = 0;
 
   happyhttp::Connection conn(ip.c_str(), port);
   Response *res = new Response();
   conn.setcallbacks(OnBegin, OnData, OnComplete, res);
-  conn.request("POST", r.getPath().c_str(), headers,
+  conn.request("POST", (r.getPath() + r.getQueryString()).c_str(), headers,
                (const unsigned char *)(r.getBody().c_str()),
                strlen(r.getBody().c_str()));
 

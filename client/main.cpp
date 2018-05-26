@@ -9,7 +9,9 @@ int main(int argc, char *argv[]) {
   Request req("POST");
   Client *c = new Client("localhost", 5000);
   req.setPath("/login");
-  req.setBodyParam("username", "AP");
+  req.setQueryParam("gg", "jj");
+  req.setHeader("sessionId", "Shahrbaraz");
+  req.setBodyParam("username", "AP&Ghamar=Gholam");
   req.setBodyParam("password", "pass");
   req.log();
   Response *res = c->send(req);

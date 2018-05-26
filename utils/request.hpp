@@ -3,6 +3,7 @@
 #include "../include.hpp"
 #include <iostream>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -21,6 +22,8 @@ public:
   string getHeader(string key);
   void setHeader(string key, string value);
   string getBody();
+  string getQueryString();
+  map<string, string> getHeaders();
   void log();
 
 private:
