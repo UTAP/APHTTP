@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -11,3 +10,6 @@ using namespace std;
 string readFile(const char *filename);
 void printVector(vector<string>);
 vector<string> split(string s, string d);
+
+std::string urlEncode(std::string const &);
+std::string urlDecode(std::string const &);

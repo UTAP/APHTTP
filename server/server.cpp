@@ -1,15 +1,19 @@
 #include "server.hpp"
 #include "../utils/utilities.hpp"
+#include <algorithm>
+#include <dirent.h>
+#include <fstream>
+#include <iostream>
+#include <limits.h>
+#include <map>
+#include <netinet/in.h>
+#include <sstream>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-class Exception : public std::exception {
-public:
-  Exception() {}
-  Exception(const char *pStr) {}
-  const char *getMessage();
-
-private:
-  const char *pMessage;
-};
+using namespace std;
 
 void split(string str, string separator, int max, vector<string> *results) {
   int i = 0;
@@ -39,7 +43,7 @@ Request *parse_headers(char *headers) {
 
       split(line, " ", 3, &R);
       if (R.size() != 3) {
-        throw Exception("Invalid header");
+        throw Server::Exception("Invalid header");
       }
       req = new Request(R[0]);
       req->setPath(R[1]);
@@ -51,7 +55,7 @@ Request *parse_headers(char *headers) {
           vector<string> Q2;
           split(Q1[q], "=", -1, &Q2);
           if (Q2.size() == 2)
-            req->setQueryParam(Q2[0], Q2[1]);
+            req->setQueryParam(Q2[0], Q2[1], false);
         }
         req->setPath(req->getPath().substr(0, pos));
       }
@@ -60,7 +64,7 @@ Request *parse_headers(char *headers) {
       string line(pch);
       split(line, ": ", 2, &R);
       if (R.size() == 2) {
-        req->setHeader(R[0], R[1]);
+        req->setHeader(R[0], R[1], false);
       }
       vector<string> body;
       split(line, "&", 10, &body);
@@ -68,7 +72,7 @@ Request *parse_headers(char *headers) {
         for (size_t i = 0; i < body.size(); i++) {
           vector<string> field;
           split(body[i], "=", 2, &field);
-          req->setBodyParam(field[0], field[1]);
+          req->setBodyParam(field[0], field[1], false);
         }
       }
     }
@@ -83,7 +87,7 @@ void parseBody(Request *req, string line) {
     for (size_t i = 0; i < body.size(); i++) {
       vector<string> field;
       split(body[i], "=", 2, &field);
-      req->setBodyParam(field[0], field[1]);
+      req->setBodyParam(field[0], field[1], false);
     }
   }
 }
@@ -153,17 +157,14 @@ void Server::run() {
     long ret = read(newsc, headers, BUFSIZE);
     headers[ret >= 0 ? ret : 0] = 0;
     Request *req = parse_headers(headers);
-    req->log();
     int cl = 0;
     if (req->getHeader("Content-Length") != "")
       cl = stoi(req->getHeader("Content-Length"));
-    struct timeval timeout;
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 0;
     char body[BUFSIZE + 1];
     ret = read(newsc, body, cl);
     body[ret >= 0 ? ret : 0] = 0;
     parseBody(req, string(body));
+    req->log();
     Response *res = new Response();
     size_t i = 0;
     for (; i < routes.size(); i++) {

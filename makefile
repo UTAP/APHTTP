@@ -11,7 +11,7 @@ $(BUILD_DIR):
 $(BUILD_DIR)/response.o: utils/response.cpp utils/response.hpp include.hpp
 	$(CC) $(CF) -c utils/response.cpp -o $(BUILD_DIR)/response.o
 
-$(BUILD_DIR)/request.o: utils/request.cpp utils/request.hpp include.hpp
+$(BUILD_DIR)/request.o: utils/request.cpp utils/request.hpp include.hpp utils/utilities.hpp
 	$(CC) $(CF) -c utils/request.cpp -o $(BUILD_DIR)/request.o
 
 $(BUILD_DIR)/utilities.o: utils/utilities.cpp utils/utilities.hpp

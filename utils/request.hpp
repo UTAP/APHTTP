@@ -1,8 +1,9 @@
 #ifndef __REQUEST__
 #define __REQUEST__
 #include "../include.hpp"
-#include <iostream>
 #include <map>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -10,19 +11,21 @@ using namespace std;
 
 class Request {
 public:
-  Request(string method);
+  Request(string method = "GET");
   string getPath();
   void setPath(string);
   Method getMethod();
   string getQueryParam(string key);
-  void setQueryParam(string key, string value);
+  void setQueryParam(string key, string value, bool encode = true);
   string getBodyParam(string key);
-  void setBodyParam(string key, string value);
+  void setBodyParam(string key, string value, bool encode = true);
   string getHeader(string key);
-  void setHeader(string key, string value);
+  void setHeader(string key, string value, bool encode = true);
   string getBody();
   void setSessionId(string);
   string getSessionId();
+  string getQueryString();
+  map<string, string> getHeaders();
   void log();
 
 private:

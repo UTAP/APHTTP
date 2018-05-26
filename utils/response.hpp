@@ -1,13 +1,9 @@
 #ifndef __RESPONSE__
 #define __RESPONSE__
 #include "../include.hpp"
-#include <cstdio>
-#include <iostream>
 #include <map>
 #include <string>
-
 using namespace std;
-
 #define BUFSIZE 8096
 
 const string SERVER_NAME = "AP HTTP Server";

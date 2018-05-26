@@ -1,5 +1,8 @@
 #include "response.hpp"
+#include <iostream>
 #include <cstring>
+
+using namespace std;
 
 Response::Response() {
   code = 200;
