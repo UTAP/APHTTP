@@ -21,6 +21,8 @@ public:
   string getHeader(string key);
   void setHeader(string key, string value);
   string getBody();
+  void setSessionId(string);
+  string getSessionId();
   void log();
 
 private:

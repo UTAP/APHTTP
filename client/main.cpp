@@ -12,6 +12,6 @@ int main(int argc, char *argv[]) {
   req.setBodyParam("username", "AP");
   req.setBodyParam("password", "pass");
   req.log();
-  Response *res = c->post(req);
+  Response *res = c->get(req);
   res->log();
 }

@@ -1,4 +1,5 @@
 #include "request.hpp"
+#include "../utils/utilities.hpp"
 
 Request::Request(string _method) {
   if (_method == "GET")
@@ -30,6 +31,19 @@ string Request::getBody() {
   for (auto it = body.begin(); it != body.end(); it++)
     bs += it->first + "=" + it->second + "&";
   return bs;
+}
+
+string Request::getSessionId() {
+  string cookie = getHeader("cookie");
+  if(cookie == "")
+    return "";
+  vector<string> v = split(cookie, ";");
+  for(string kv: v){
+    vector<string> k = split(kv, "=");
+    if(k[0] == "sessionId")
+      return k[1];
+  }
+  return "";
 }
 
 void Request::log() {

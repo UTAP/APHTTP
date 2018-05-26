@@ -23,6 +23,7 @@ public:
   int getStatusCode();
   string getStatusPhrase();
   string getHeader(string name);
+  void setSessionId(string sessionId);
 
 private:
   int code;
