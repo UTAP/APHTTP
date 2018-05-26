@@ -50,3 +50,12 @@ Response *Client::post(Request r) {
     conn.pump();
   return res;
 }
+
+Response *Client::send(Request r) {
+  switch (r.getMethod()) {
+  case GET:
+    return this->get(r);
+  case POST:
+    return this->post(r);
+  }
+}

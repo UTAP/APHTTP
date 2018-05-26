@@ -10,7 +10,7 @@ using namespace std;
 
 class Request {
 public:
-  Request(string method);
+  Request(string method = "GET");
   string getPath();
   void setPath(string);
   Method getMethod();

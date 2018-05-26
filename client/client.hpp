@@ -12,9 +12,10 @@ class Client {
 private:
   string ip;
   int port;
+  Response *get(Request r);
+  Response *post(Request r);
 
 public:
   Client(string _ip = "localhost", int _port = 80);
-  Response *get(Request r);
-  Response *post(Request r);
+  Response *send(Request r);
 };
