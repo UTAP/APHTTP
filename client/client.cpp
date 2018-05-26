@@ -56,6 +56,8 @@ Response *Client::post(Request r) {
   }
   headers[j] = 0;
 
+  cerr << r.getBody() << endl;
+
   happyhttp::Connection conn(ip.c_str(), port);
   Response *res = new Response();
   conn.setcallbacks(OnBegin, OnData, OnComplete, res);

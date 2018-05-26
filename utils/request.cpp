@@ -1,4 +1,5 @@
 #include "request.hpp"
+#include "../utils/utilities.hpp"
 
 Request::Request(string _method) {
   if (_method == "GET")
@@ -7,11 +8,11 @@ Request::Request(string _method) {
     method = POST;
 }
 
-string Request::getQueryParam(string key) { return query[key]; }
+string Request::getQueryParam(string key) { return urlDecode(query[key]); }
 
-string Request::getBodyParam(string key) { return body[key]; }
+string Request::getBodyParam(string key) { return urlDecode(body[key]); }
 
-string Request::getHeader(string key) { return headers[key]; }
+string Request::getHeader(string key) { return urlDecode(headers[key]); }
 
 string Request::getPath() { return path; }
 
@@ -19,11 +20,17 @@ void Request::setPath(string _path) { path = _path; }
 
 Method Request::getMethod() { return method; }
 
-void Request::setQueryParam(string key, string value) { query[key] = value; }
+void Request::setQueryParam(string key, string value, bool encode) {
+  query[key] = encode ? urlEncode(value) : value;
+}
 
-void Request::setBodyParam(string key, string value) { body[key] = value; }
+void Request::setBodyParam(string key, string value, bool encode) {
+  body[key] = encode ? urlEncode(value) : value;
+}
 
-void Request::setHeader(string key, string value) { headers[key] = value; }
+void Request::setHeader(string key, string value, bool encode) {
+  headers[key] = encode ? urlEncode(value) : value;
+}
 
 string Request::getBody() {
   string bs = "";
@@ -43,13 +50,16 @@ void Request::log() {
   log += K + string("Path:\t") + NC + path + string("\n");
   log += K + string("Headers:") + NC + string("\n");
   for (auto it = headers.begin(); it != headers.end(); it++)
-    log += "  " + it->first + ": " + it->second + string("\n");
+    log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
+           string("\n");
   log += K + string("Query:") + NC + string("\n");
   for (auto it = query.begin(); it != query.end(); it++)
-    log += "  " + it->first + ": " + it->second + string("\n");
+    log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
+           string("\n");
   log += K + string("Body:") + NC + string("\n");
   for (auto it = body.begin(); it != body.end(); it++)
-    log += "  " + it->first + ": " + it->second + string("\n");
+    log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
+           string("\n");
   log += H + string("------------------------") + NC + string("\n");
   cerr << log << endl;
 }

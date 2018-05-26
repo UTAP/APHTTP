@@ -51,7 +51,7 @@ Request *parse_headers(char *headers) {
           vector<string> Q2;
           split(Q1[q], "=", -1, &Q2);
           if (Q2.size() == 2)
-            req->setQueryParam(Q2[0], Q2[1]);
+            req->setQueryParam(Q2[0], Q2[1], false);
         }
         req->setPath(req->getPath().substr(0, pos));
       }
@@ -60,7 +60,7 @@ Request *parse_headers(char *headers) {
       string line(pch);
       split(line, ": ", 2, &R);
       if (R.size() == 2) {
-        req->setHeader(R[0], R[1]);
+        req->setHeader(R[0], R[1], false);
       }
       vector<string> body;
       split(line, "&", 10, &body);
@@ -68,7 +68,7 @@ Request *parse_headers(char *headers) {
         for (size_t i = 0; i < body.size(); i++) {
           vector<string> field;
           split(body[i], "=", 2, &field);
-          req->setBodyParam(field[0], field[1]);
+          req->setBodyParam(field[0], field[1], false);
         }
       }
     }
@@ -83,7 +83,7 @@ void parseBody(Request *req, string line) {
     for (size_t i = 0; i < body.size(); i++) {
       vector<string> field;
       split(body[i], "=", 2, &field);
-      req->setBodyParam(field[0], field[1]);
+      req->setBodyParam(field[0], field[1], false);
     }
   }
 }

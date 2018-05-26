@@ -16,11 +16,11 @@ public:
   void setPath(string);
   Method getMethod();
   string getQueryParam(string key);
-  void setQueryParam(string key, string value);
+  void setQueryParam(string key, string value, bool encode = true);
   string getBodyParam(string key);
-  void setBodyParam(string key, string value);
+  void setBodyParam(string key, string value, bool encode = true);
   string getHeader(string key);
-  void setHeader(string key, string value);
+  void setHeader(string key, string value, bool encode = true);
   string getBody();
   string getQueryString();
   map<string, string> getHeaders();
