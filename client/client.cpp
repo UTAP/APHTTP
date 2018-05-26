@@ -58,4 +58,5 @@ Response *Client::send(Request r) {
   case POST:
     return this->post(r);
   }
+  return NULL;
 }

@@ -153,17 +153,14 @@ void Server::run() {
     long ret = read(newsc, headers, BUFSIZE);
     headers[ret >= 0 ? ret : 0] = 0;
     Request *req = parse_headers(headers);
-    req->log();
     int cl = 0;
     if (req->getHeader("Content-Length") != "")
       cl = stoi(req->getHeader("Content-Length"));
-    struct timeval timeout;
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 0;
     char body[BUFSIZE + 1];
     ret = read(newsc, body, cl);
     body[ret >= 0 ? ret : 0] = 0;
     parseBody(req, string(body));
+    req->log();
     Response *res = new Response();
     size_t i = 0;
     for (; i < routes.size(); i++) {
