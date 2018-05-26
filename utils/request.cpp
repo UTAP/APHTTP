@@ -1,5 +1,8 @@
 #include "request.hpp"
 #include "../utils/utilities.hpp"
+#include <iostream>
+
+using namespace std;
 
 Request::Request(string _method) {
   if (_method == "GET")

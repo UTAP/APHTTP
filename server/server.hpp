@@ -2,21 +2,9 @@
 #include "../utils/request.hpp"
 #include "../utils/response.hpp"
 #include "route.hpp"
-#include <algorithm>
-#include <dirent.h>
-#include <fstream>
-#include <iostream>
-#include <limits.h>
-#include <map>
-#include <netinet/in.h>
-#include <sstream>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <exception>
+#include <string>
 #include <vector>
-
-using namespace std;
 
 class RequestHandler {
 public:
@@ -27,11 +15,21 @@ class Server {
 public:
   Server(int port = 5000);
   void run();
-  void get(string path, RequestHandler *handler);
-  void post(string path, RequestHandler *handler);
+  void get(std::string path, RequestHandler *handler);
+  void post(std::string path, RequestHandler *handler);
+
+  class Exception : public std::exception {
+  public:
+    Exception() {}
+    Exception(const char *pStr) {}
+    const char *getMessage();
+
+  private:
+    const char *pMessage;
+  };
 
 private:
   int sc;
   int port;
-  vector<Route *> routes;
+  std::vector<Route *> routes;
 };

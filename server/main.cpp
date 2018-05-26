@@ -1,5 +1,6 @@
 #include "../utils/utilities.hpp"
 #include "server.hpp"
+#include <iostream>
 
 using namespace std;
 

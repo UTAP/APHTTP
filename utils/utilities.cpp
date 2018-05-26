@@ -1,4 +1,7 @@
 #include "utilities.hpp"
+#include <fstream>
+
+using namespace std;
 
 string readFile(const char *filename) {
   string s = "";

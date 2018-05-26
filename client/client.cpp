@@ -1,6 +1,9 @@
 #include "client.hpp"
 #include <cstdio>
 #include <cstring>
+#include <iostream>
+
+using namespace std;
 
 void OnBegin(const happyhttp::Response *r, void *userdata) {
   Response *res = (Response *)userdata;
@@ -33,7 +36,7 @@ Response *Client::get(Request r) {
   happyhttp::Connection conn(ip.c_str(), port);
   conn.setcallbacks(OnBegin, OnData, OnComplete, res);
 
-  conn.request("GET", (r.getPath() + r.getQueryString()).c_str(), 0,
+  conn.request("GET", (r.getPath() + r.getQueryString()).c_str(), headers,
                (const unsigned char *)(r.getBody().c_str()),
                strlen(r.getBody().c_str()));
 

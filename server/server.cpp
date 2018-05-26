@@ -1,15 +1,19 @@
 #include "server.hpp"
 #include "../utils/utilities.hpp"
+#include <algorithm>
+#include <dirent.h>
+#include <fstream>
+#include <iostream>
+#include <limits.h>
+#include <map>
+#include <netinet/in.h>
+#include <sstream>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-class Exception : public std::exception {
-public:
-  Exception() {}
-  Exception(const char *pStr) {}
-  const char *getMessage();
-
-private:
-  const char *pMessage;
-};
+using namespace std;
 
 void split(string str, string separator, int max, vector<string> *results) {
   int i = 0;
@@ -39,7 +43,7 @@ Request *parse_headers(char *headers) {
 
       split(line, " ", 3, &R);
       if (R.size() != 3) {
-        throw Exception("Invalid header");
+        throw Server::Exception("Invalid header");
       }
       req = new Request(R[0]);
       req->setPath(R[1]);
