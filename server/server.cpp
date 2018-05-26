@@ -153,6 +153,7 @@ void Server::run() {
     long ret = read(newsc, headers, BUFSIZE);
     headers[ret >= 0 ? ret : 0] = 0;
     Request *req = parse_headers(headers);
+    req->log();
     int cl = 0;
     if (req->getHeader("Content-Length") != "")
       cl = stoi(req->getHeader("Content-Length"));
