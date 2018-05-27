@@ -1,3 +1,5 @@
+#ifndef __SERVER__
+#define __SERVER__
 #include "../include.hpp"
 #include "../utils/request.hpp"
 #include "../utils/response.hpp"
@@ -21,7 +23,7 @@ public:
   class Exception : public std::exception {
   public:
     Exception() {}
-    Exception(const char *pStr) {}
+    Exception(const char *pStr) { pMessage = pStr;}
     const char *getMessage();
 
   private:
@@ -33,3 +35,4 @@ private:
   int port;
   std::vector<Route *> routes;
 };
+#endif
