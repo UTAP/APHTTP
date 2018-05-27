@@ -11,9 +11,8 @@ public:
   ShowPage(string _filePath) { filePath = _filePath; }
   Response *callback(Request *req) {
     Response *res = new Response;
-    res->setBody(readFile(filePath.c_str()));
     res->setHeader("Content-Type", "text/html");
-    res->setSessionId("s1");
+    res->setBody(readFile(filePath.c_str()));
     return res;
   }
 };
@@ -24,8 +23,9 @@ public:
     Response *res = new Response;
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
-    res->setBody(readFile("htmlFiles/login.html"));
+    cout<< "Received Data: "<< username << " - " << password<<endl;
     res->setHeader("Content-Type", "text/html");
+    res->setBody(readFile("htmlFiles/login.html"));
     res->setSessionId("123");
     return res;
   }
@@ -40,7 +40,6 @@ int main(int argc, char **argv) {
     server.post("/login", new LoginHandler());
     server.run();
   } catch (Server::Exception e) {
-    cout<<"SSS"<<endl;
     cout<<e.getMessage()<<endl;
   }
 }
