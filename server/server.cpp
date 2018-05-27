@@ -36,7 +36,7 @@ Request *parse_headers(char *headers) {
   Request *req;
   int i = 0;
   char *pch;
-  for (pch = strtok(headers, "\n"); pch; pch = strtok(NULL, "\n")) {
+  for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
     if (i++ == 0) {
       vector<string> R;
       string line(pch);
@@ -78,18 +78,6 @@ Request *parse_headers(char *headers) {
     }
   }
   return req;
-}
-
-void parseBody(Request *req, string line) {
-  vector<string> body;
-  split(line, "&", 10, &body);
-  if (body.size() > 1) {
-    for (size_t i = 0; i < body.size(); i++) {
-      vector<string> field;
-      split(body[i], "=", 2, &field);
-      req->setBodyParam(field[0], field[1], false);
-    }
-  }
 }
 
 Route::Route(Method _method, string _path) {
@@ -157,13 +145,6 @@ void Server::run() {
     long ret = read(newsc, headers, BUFSIZE);
     headers[ret >= 0 ? ret : 0] = 0;
     Request *req = parse_headers(headers);
-    int cl = 0;
-    if (req->getHeader("Content-Length") != "")
-      cl = stoi(req->getHeader("Content-Length"));
-    char body[BUFSIZE + 1];
-    ret = read(newsc, body, cl);
-    body[ret >= 0 ? ret : 0] = 0;
-    parseBody(req, string(body));
     req->log();
     Response *res = new Response();
     size_t i = 0;
