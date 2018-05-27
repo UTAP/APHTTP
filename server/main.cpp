@@ -32,8 +32,8 @@ public:
   }
 };
 
-int main() {
-  Server server;
+int main(int argc, char **argv) {
+  Server server(argc > 1 ? atoi(argv[1]) : 5000);
   server.get("/", new ShowPage("htmlFiles/home.html"));
   server.get("/home", new ShowPage("htmlFiles/home.html"));
   server.get("/login_page", new ShowPage("htmlFiles/login.html"));
