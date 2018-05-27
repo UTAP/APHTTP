@@ -55,7 +55,7 @@ Response *Client::post(Request r) {
   for (map<string, string>::iterator i = headers_map.begin();
        i != headers_map.end(); i++, j += 2) {
     headers[j] = (i->first).c_str();
-    headers[j + 1] = (i->second).c_str
+    headers[j + 1] = (i->second).c_str();
   }
   headers[j] = 0;
 

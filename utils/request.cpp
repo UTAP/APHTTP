@@ -1,6 +1,7 @@
 #include "request.hpp"
 #include "../utils/utilities.hpp"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -44,12 +45,12 @@ string Request::getBody() {
 
 string Request::getSessionId() {
   string cookie = getHeader("cookie");
-  if(cookie == "")
+  if (cookie == "")
     return "";
   vector<string> v = split(cookie, ";");
-  for(string kv: v){
+  for (string kv : v) {
     vector<string> k = split(kv, "=");
-    if(k[0] == "sessionId")
+    if (k[0] == "sessionId")
       return k[1];
   }
   return "";
@@ -68,6 +69,8 @@ void Request::log() {
   for (auto it = headers.begin(); it != headers.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
+  log += "[ " + K + string("SessionId:\t") + NC + this->getSessionId() + " ]" +
+         string("\n");
   log += K + string("Query:") + NC + string("\n");
   for (auto it = query.begin(); it != query.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
