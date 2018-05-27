@@ -19,8 +19,8 @@ public:
   std::string getHeader(std::string key);
   void setHeader(std::string key, std::string value, bool encode = true);
   std::string getBody();
-  void setSessionId(std::string);
   std::string getSessionId();
+  void setSessionId(std::string);
   std::string getQueryString();
   std::map<std::string, std::string> getHeaders();
   void log();

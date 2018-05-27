@@ -69,6 +69,8 @@ void Request::log() {
   for (auto it = headers.begin(); it != headers.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
+  log += "[ " + K + string("SessionId:\t") + NC + this->getSessionId() + " ]" +
+         string("\n");
   log += K + string("Query:") + NC + string("\n");
   for (auto it = query.begin(); it != query.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
