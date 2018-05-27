@@ -80,7 +80,7 @@ void Request::log() {
   cerr << log << endl;
 }
 
-map<string, string> Request::getHeaders() {
+cimap Request::getHeaders() {
   vector<string> res;
   for (map<string, string>::iterator i = headers.begin(); i != headers.end();
        i++) {

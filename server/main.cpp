@@ -28,6 +28,7 @@ public:
     cout << "Submitted data: " << username << " : " << password << endl;
     res->setBody(readFile("htmlFiles/login.html"));
     res->setHeader("Content-Type", "text/html");
+    res->setSessionId("123");
     return res;
   }
 };

@@ -1,6 +1,7 @@
 #ifndef __RESPONSE__
 #define __RESPONSE__
 #include "../include.hpp"
+#include "../utils/utilities.hpp"
 #include <map>
 #include <string>
 using namespace std;
@@ -25,7 +26,7 @@ private:
   int code;
   string phrase;
   string body;
-  map<string, string> headers;
+  cimap headers;
 };
 
 #endif

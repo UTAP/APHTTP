@@ -1,7 +1,25 @@
 #include "utilities.hpp"
 #include <fstream>
+#include <map>
+#include <string>
+#include <iostream>
+#include <algorithm>
 
 using namespace std;
+
+char easytolower(char in) {
+  if(in <= 'Z' && in >= 'A')
+    return in - ('Z' - 'z');
+  return in;
+}
+
+string tolower(string s) {
+  std::transform(s.begin(), s.end(), s.begin(), easytolower);
+    return s;
+}
+bool comp::operator() (const string& lhs, const string& rhs) const {
+  return  tolower(lhs) < tolower(rhs);
+}
 
 string readFile(const char *filename) {
   string s = "";

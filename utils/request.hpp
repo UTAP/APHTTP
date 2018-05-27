@@ -1,6 +1,7 @@
 #ifndef __REQUEST__
 #define __REQUEST__
 #include "../include.hpp"
+#include "../utils/utilities.hpp"
 #include <map>
 #include <string>
 #include <vector>
@@ -25,14 +26,14 @@ public:
   void setSessionId(string);
   string getSessionId();
   string getQueryString();
-  map<string, string> getHeaders();
+  cimap getHeaders();
   void log();
 
 private:
   string path;
   Method method;
-  map<string, string> headers;
-  map<string, string> query;
-  map<string, string> body;
+  cimap headers;
+  cimap query;
+  cimap body;
 };
 #endif
