@@ -1,14 +1,14 @@
 #ifndef __UTILILITES__
 #define __UTILILITES__
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #define BUFFER_SIZE 8096
 
 using namespace std;
 struct comp {
-    bool operator() (const std::string& lhs, const string& rhs) const;
+  bool operator()(const std::string &lhs, const string &rhs) const;
 };
 
 typedef std::map<std::string, std::string, comp> cimap;
