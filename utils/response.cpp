@@ -1,6 +1,6 @@
 #include "response.hpp"
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
 using namespace std;
 
@@ -54,6 +54,6 @@ void Response::setBody(string _body) { body = _body; }
 
 string Response::getHeader(string name) { return ""; }
 
-void Response::setSessionId(string sessionId){
+void Response::setSessionId(string sessionId) {
   setHeader("set-cookie", "sessionId=" + sessionId + ";");
 }

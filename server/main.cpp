@@ -10,7 +10,7 @@ class ShowPage : public RequestHandler {
 public:
   ShowPage(string _filePath) { filePath = _filePath; }
   Response *callback(Request *req) {
-    cout<<endl<<"SessionId: "<<req->getSessionId()<<endl<<endl;
+    cout << endl << "SessionId: " << req->getSessionId() << endl << endl;
     Response *res = new Response;
     res->setBody(readFile(filePath.c_str()));
     res->setHeader("Content-Type", "text/html");

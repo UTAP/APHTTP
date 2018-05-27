@@ -1,5 +1,7 @@
 #include "utilities.hpp"
+#include <algorithm>
 #include <fstream>
+#include <iostream>
 
 using namespace std;
 
@@ -20,25 +22,23 @@ string readFile(const char *filename) {
   return s;
 }
 
-vector<string> split(string s, string delimiter)
-{
+vector<string> split(string s, string delimiter) {
   vector<string> tokens;
   s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
   size_t pos = 0;
   string token;
   while ((pos = s.find(delimiter)) != string::npos) {
-      token = s.substr(0, pos);
-      tokens.push_back(token);
-      s.erase(0, pos + delimiter.length());
+    token = s.substr(0, pos);
+    tokens.push_back(token);
+    s.erase(0, pos + delimiter.length());
   }
   tokens.push_back(s);
   return tokens;
 }
 
-void printVector(vector<string> v)
-{
-  for(string s: v)
-    cout<<s<<endl;
+void printVector(vector<string> v) {
+  for (string s : v)
+    cout << s << endl;
 }
 
 string urlEncode(string const &str) {

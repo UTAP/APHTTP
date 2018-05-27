@@ -3,36 +3,33 @@
 #include "../include.hpp"
 #include <map>
 #include <string>
-#include <vector>
-
-using namespace std;
 
 #define BUFSIZE 8096
 
 class Request {
 public:
-  Request(string method = "GET");
-  string getPath();
-  void setPath(string);
+  Request(std::string method = "GET");
+  std::string getPath();
+  void setPath(std::string);
   Method getMethod();
-  string getQueryParam(string key);
-  void setQueryParam(string key, string value, bool encode = true);
-  string getBodyParam(string key);
-  void setBodyParam(string key, string value, bool encode = true);
-  string getHeader(string key);
-  void setHeader(string key, string value, bool encode = true);
-  string getBody();
-  void setSessionId(string);
-  string getSessionId();
-  string getQueryString();
-  map<string, string> getHeaders();
+  std::string getQueryParam(std::string key);
+  void setQueryParam(std::string key, std::string value, bool encode = true);
+  std::string getBodyParam(std::string key);
+  void setBodyParam(std::string key, std::string value, bool encode = true);
+  std::string getHeader(std::string key);
+  void setHeader(std::string key, std::string value, bool encode = true);
+  std::string getBody();
+  void setSessionId(std::string);
+  std::string getSessionId();
+  std::string getQueryString();
+  std::map<std::string, std::string> getHeaders();
   void log();
 
 private:
-  string path;
+  std::string path;
   Method method;
-  map<string, string> headers;
-  map<string, string> query;
-  map<string, string> body;
+  std::map<std::string, std::string> headers;
+  std::map<std::string, std::string> query;
+  std::map<std::string, std::string> body;
 };
 #endif
