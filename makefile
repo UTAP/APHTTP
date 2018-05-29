@@ -23,6 +23,9 @@ $(BUILD_DIR)/http.o: client/http.cpp client/http.hpp
 $(BUILD_DIR)/server.o: server/server.cpp server/server.hpp server/route.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp include.hpp
 	$(CC) $(CF) -c server/server.cpp -o $(BUILD_DIR)/server.o
 
+$(BUILD_DIR)/route.o: server/route.cpp server/route.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp include.hpp
+	$(CC) $(CF) -c server/route.cpp -o $(BUILD_DIR)/route.o
+
 $(BUILD_DIR)/client.o: client/client.cpp client/client.hpp client/http.hpp utils/response.hpp utils/request.hpp
 	$(CC) $(CF) -c client/client.cpp -o $(BUILD_DIR)/client.o
 
@@ -32,8 +35,8 @@ $(BUILD_DIR)/server_main.o: server/main.cpp server/server.hpp utils/utilities.hp
 $(BUILD_DIR)/client_main.o: client/main.cpp client/client.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp client/http.hpp
 	$(CC) $(CF) -c client/main.cpp -o $(BUILD_DIR)/client_main.o
 
-server.out: $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/server_main.o
-	$(CC) $(CF) $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/server_main.o -o server.out
+server.out: $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/server_main.o
+	$(CC) $(CF) $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/server_main.o -o server.out
 
 client.out: $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/client.o $(BUILD_DIR)/http.o $(BUILD_DIR)/client_main.o
 	$(CC) $(CF) $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/http.o $(BUILD_DIR)/client.o $(BUILD_DIR)/client_main.o -o client.out

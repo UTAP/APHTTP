@@ -34,74 +34,68 @@ void split(string str, string separator, int max, vector<string> *results) {
 
 Request *parse_headers(char *headers) {
   Request *req;
-  int i = 0;
-  char *pch;
-  for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
-    if (i++ == 0) {
-      vector<string> R;
-      string line(pch);
 
-      split(line, " ", 3, &R);
-      if (R.size() != 3) {
-        throw Server::Exception("Invalid header");
-      }
-      req = new Request(R[0]);
-      req->setPath(R[1]);
-      size_t pos = req->getPath().find('?');
-      if (pos != string::npos) {
-        vector<string> Q1;
-        split(req->getPath().substr(pos + 1), "&", -1, &Q1);
-        for (vector<string>::size_type q = 0; q < Q1.size(); q++) {
-          vector<string> Q2;
-          split(Q1[q], "=", -1, &Q2);
-          if (Q2.size() == 2)
-            req->setQueryParam(Q2[0], Q2[1], false);
+  try{
+    int i = 0;
+    char *pch;
+    for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
+      if (i++ == 0) {
+        vector<string> R;
+        string line(pch);
+
+        split(line, " ", 3, &R);
+        if (R.size() != 3) {
+          throw Server::Exception("Invalid header");
         }
-        req->setPath(req->getPath().substr(0, pos));
-      }
-    } else {
-      vector<string> R;
-      string line(pch);
-      split(line, ": ", 2, &R);
-      if (R.size() == 2) {
-        req->setHeader(R[0], R[1], false);
-      }
-      vector<string> body;
-      split(line, "&", 10, &body);
-      if (body.size() > 1) {
-        for (size_t i = 0; i < body.size(); i++) {
-          vector<string> field;
-          split(body[i], "=", 2, &field);
-          req->setBodyParam(field[0], field[1], false);
+        req = new Request(R[0]);
+        req->setPath(R[1]);
+        size_t pos = req->getPath().find('?');
+        if (pos != string::npos) {
+          vector<string> Q1;
+          split(req->getPath().substr(pos + 1), "&", -1, &Q1);
+          for (vector<string>::size_type q = 0; q < Q1.size(); q++) {
+            vector<string> Q2;
+            split(Q1[q], "=", -1, &Q2);
+            if (Q2.size() == 2)
+              req->setQueryParam(Q2[0], Q2[1], false);
+          }
+          req->setPath(req->getPath().substr(0, pos));
+        }
+      } else {
+        vector<string> R;
+        string line(pch);
+        split(line, ": ", 2, &R);
+        if (R.size() == 2) {
+          req->setHeader(R[0], R[1], false);
+        }
+        vector<string> body;
+        split(line, "&", 10, &body);
+        if (body.size() > 1) {
+          for (size_t i = 0; i < body.size(); i++) {
+            vector<string> field;
+            split(body[i], "=", 2, &field);
+            req->setBodyParam(field[0], field[1], false);
+          }
         }
       }
     }
+  } catch(...) {
+    throw Server::Exception("Error on parsing header");
   }
   return req;
 }
-
-Route::Route(Method _method, string _path) {
-  method = _method;
-  path = _path;
-}
-
-bool Route::isMatch(Method _method, string url) {
-  return (url == path) && (_method == method);
-}
-
-Response *Route::handle(Request *req) { return handler->callback(req); }
 
 Server::Server(int _port) { port = _port; }
 
 void Server::get(string path, RequestHandler *handler) {
   Route *route = new Route(GET, path);
-  route->handler = handler;
+  route->setHandler(handler);
   routes.push_back(route);
 }
 
 void Server::post(string path, RequestHandler *handler) {
   Route *route = new Route(POST, path);
-  route->handler = handler;
+  route->setHandler(handler);
   routes.push_back(route);
 }
 
@@ -119,7 +113,7 @@ public:
 void Server::run() {
   sc = socket(AF_INET, SOCK_STREAM, 0);
   if (sc < 0)
-    throw Exception("Error opening socket");
+    throw Exception("Error on opening socket");
   struct sockaddr_in serv_addr;
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -178,6 +172,10 @@ void Server::run() {
     FD_CLR(newsc, &fds);
     close(newsc);
   }
+}
+
+const char* Server::Exception::getMessage(){
+  return pMessage;
 }
 
 Response *RequestHandler::callback(Request *req) { return NULL; }

@@ -20,11 +20,10 @@ public:
 
 class LoginHandler : public RequestHandler {
 public:
-  Response *callback(Request *req) {
+  Response* callback(Request* req) {
     Response *res = new Response;
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
-    cout << "Submitted data: " << username << " : " << password << endl;
     res->setBody(readFile("htmlFiles/login.html"));
     res->setHeader("Content-Type", "text/html");
     res->setSessionId("123");
@@ -33,10 +32,15 @@ public:
 };
 
 int main(int argc, char **argv) {
-  Server server(argc > 1 ? atoi(argv[1]) : 5000);
-  server.get("/", new ShowPage("htmlFiles/home.html"));
-  server.get("/home", new ShowPage("htmlFiles/home.html"));
-  server.get("/login_page", new ShowPage("htmlFiles/login.html"));
-  server.post("/login", new LoginHandler());
-  server.run();
+  try{
+    Server server(argc > 1 ? atoi(argv[1]) : 5000);
+    server.get("/", new ShowPage("htmlFiles/home.html"));
+    server.get("/home", new ShowPage("htmlFiles/home.html"));
+    server.get("/login_page", new ShowPage("htmlFiles/login.html"));
+    server.post("/login", new LoginHandler());
+    server.run();
+  } catch (Server::Exception e) {
+    cout<<"SSS"<<endl;
+    cout<<e.getMessage()<<endl;
+  }
 }
