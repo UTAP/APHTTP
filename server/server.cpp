@@ -136,14 +136,30 @@ void Server::run() {
   clilen = sizeof(cli_addr);
   int newsc;
 
+  fd_set fds;
+  struct timeval timeout;
+  timeout.tv_sec = 1;
+  timeout.tv_usec = 0;
+  FD_ZERO(&fds);
+  FD_SET(sc, &fds);
   while (true) {
     newsc = accept(sc, (struct sockaddr *)&cli_addr, &clilen);
+    FD_SET(newsc, &fds);
     if (newsc < 0)
       throw Exception("Error on accept");
 
-    char headers[BUFSIZE + 1];
-    long ret = read(newsc, headers, BUFSIZE);
-    headers[ret >= 0 ? ret : 0] = 0;
+    char headers[5 * BUFSIZE + 1] = "";
+    long len = 0;
+    while (select(newsc + 1, &fds, NULL, NULL, &timeout) &&
+           FD_ISSET(newsc, &fds)) {
+      char data[BUFSIZE + 1];
+      long ret = read(newsc, data, BUFSIZE);
+      if (ret <= 0)
+        break;
+      data[ret >= 0 ? ret : 0] = 0;
+      len += ret;
+      strcat(headers, data);
+    }
     Request *req = parse_headers(headers);
     req->log();
     Response *res = new Response();
@@ -159,6 +175,7 @@ void Server::run() {
     }
     char *header_buffer = res->print();
     write(newsc, header_buffer, strlen(header_buffer));
+    FD_CLR(newsc, &fds);
     close(newsc);
   }
 }
