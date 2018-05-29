@@ -20,7 +20,7 @@ public:
 
 class LoginHandler : public RequestHandler {
 public:
-  Response* callback(Request* req) {
+  Response *callback(Request *req) {
     Response *res = new Response;
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
@@ -32,7 +32,7 @@ public:
 };
 
 int main(int argc, char **argv) {
-  try{
+  try {
     Server server(argc > 1 ? atoi(argv[1]) : 5000);
     server.get("/", new ShowPage("htmlFiles/home.html"));
     server.get("/home", new ShowPage("htmlFiles/home.html"));
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     server.post("/login", new LoginHandler());
     server.run();
   } catch (Server::Exception e) {
-    cout<<"SSS"<<endl;
-    cout<<e.getMessage()<<endl;
+    cout << "SSS" << endl;
+    cout << e.getMessage() << endl;
   }
 }

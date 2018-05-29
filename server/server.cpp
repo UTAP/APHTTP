@@ -35,7 +35,7 @@ void split(string str, string separator, int max, vector<string> *results) {
 Request *parse_headers(char *headers) {
   Request *req;
 
-  try{
+  try {
     int i = 0;
     char *pch;
     for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
@@ -79,7 +79,7 @@ Request *parse_headers(char *headers) {
         }
       }
     }
-  } catch(...) {
+  } catch (...) {
     throw Server::Exception("Error on parsing header");
   }
   return req;
@@ -174,8 +174,6 @@ void Server::run() {
   }
 }
 
-const char* Server::Exception::getMessage(){
-  return pMessage;
-}
+const char *Server::Exception::getMessage() { return pMessage; }
 
 Response *RequestHandler::callback(Request *req) { return NULL; }
