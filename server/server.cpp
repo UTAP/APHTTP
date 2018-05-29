@@ -142,7 +142,7 @@ void Server::run() {
     if (newsc < 0)
       throw Exception("Error on accept");
 
-    char headers[5 * BUFSIZE + 1] = "";
+    string headers = "";
     long len = 0;
     while (select(newsc + 1, &fds, NULL, NULL, &timeout) &&
            FD_ISSET(newsc, &fds)) {
@@ -152,9 +152,11 @@ void Server::run() {
         break;
       data[ret >= 0 ? ret : 0] = 0;
       len += ret;
-      strcat(headers, data);
+      headers += data;
     }
-    Request *req = parse_headers(headers);
+    char headers_array[headers.size()];
+    strcpy(headers_array, headers.c_str());
+    Request *req = parse_headers(headers_array);
     req->log();
     Response *res = new Response();
     size_t i = 0;
