@@ -23,7 +23,7 @@ public:
   class Exception : public std::exception {
   public:
     Exception() {}
-    Exception(const char *pStr) { pMessage = pStr;}
+    Exception(const char *pStr) { pMessage = pStr; }
     const char *getMessage();
 
   private:
