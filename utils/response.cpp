@@ -19,17 +19,22 @@ void Response::setStatus(int _code, string _phrase) {
   code = _code;
 }
 
-char *Response::print() {
+char *Response::print(int& size) {
   char *header_buffer = new char[BUFSIZE];
   string h = "";
   h += "HTTP/1.0 " + to_string(code) + " " + phrase + "\r\n";
   h += "Server: " + SERVER_NAME + " \r\n";
-  h += "Content-Length: " + to_string(strlen(body.c_str())) + "\r\n";
+  h += "Content-Length: " + to_string(body.size()) + "\r\n";
   for (auto it = headers.begin(); it != headers.end(); it++)
     h += it->first + ": " + it->second + "\r\n";
   h += "\r\n";
-  h += body;
   strcpy(header_buffer, h.c_str());
+  int i;
+  int hbsize = strlen(header_buffer);
+  for(i = 0; i < body.size(); i++){
+    header_buffer[hbsize+i] = body[i];
+  }
+  size = i + hbsize;
   return header_buffer;
 }
 
@@ -43,6 +48,9 @@ void Response::log() {
   log += H + string("------- Response -------") + NC + string("\n");
   log += K + string("Status:\t") + NC + (code == 200 ? G : R) +
          to_string(code) + " " + phrase + NC + string("\n");
+  log += K + string("Headers:") + NC + string("\n");
+  for (auto it = headers.begin(); it != headers.end(); it++)
+    log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) + string("\n");
   log += K + string("Body:\n") + NC + body + string("\n");
   log += H + string("------------------------") + NC + string("\n");
   cerr << log << endl;

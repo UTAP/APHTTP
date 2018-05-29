@@ -85,6 +85,7 @@ Request *parse_headers(char *headers) {
   return req;
 }
 
+
 Server::Server(int _port) { port = _port; }
 
 void Server::get(string path, RequestHandler *handler) {
@@ -151,8 +152,11 @@ void Server::run() {
     if (i == routes.size()) {
       res = notFoundHandler->callback(req);
     }
-    char *header_buffer = res->print();
-    write(newsc, header_buffer, strlen(header_buffer));
+    int si;
+    char *header_buffer = res->print(si);
+    int wr = write(newsc, header_buffer, si);
+    if(wr != si)
+      throw Exception("Write error");
     close(newsc);
   }
 }

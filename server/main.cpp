@@ -12,7 +12,21 @@ public:
   Response *callback(Request *req) {
     Response *res = new Response;
     res->setHeader("Content-Type", "text/html");
+    string body = readFile(filePath.c_str());
     res->setBody(readFile(filePath.c_str()));
+    return res;
+  }
+};
+
+class ShowImage : public RequestHandler {
+  string filePath;
+public:
+  ShowImage(string _filePath) { filePath = _filePath; }
+  Response *callback(Request *req) {
+    Response *res = new Response;
+    res->setHeader("Content-Type", "image/png");
+    string body = readFile(filePath.c_str());
+    res->setBody(body);
     return res;
   }
 };
@@ -31,16 +45,17 @@ public:
   }
 };
 
+
+
 int main(int argc, char **argv) {
   try {
     Server server(argc > 1 ? atoi(argv[1]) : 5000);
-    server.get("/", new ShowPage("htmlFiles/home.html"));
+    server.get("/home_icon", new ShowImage("htmlFiles/home.png"));
     server.get("/home", new ShowPage("htmlFiles/home.html"));
     server.get("/login_page", new ShowPage("htmlFiles/login.html"));
     server.post("/login", new LoginHandler());
     server.run();
   } catch (Server::Exception e) {
-    cout << "SSS" << endl;
     cout << e.getMessage() << endl;
   }
 }

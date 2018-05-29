@@ -19,7 +19,6 @@ public:
   void run();
   void get(std::string path, RequestHandler *handler);
   void post(std::string path, RequestHandler *handler);
-
   class Exception : public std::exception {
   public:
     Exception() {}
