@@ -70,11 +70,15 @@ Request *parse_headers(char *headers) {
         }
         vector<string> body;
         split(line, "&", 10, &body);
+        cout<<line<<endl;
         if (body.size() > 1) {
           for (size_t i = 0; i < body.size(); i++) {
             vector<string> field;
             split(body[i], "=", 2, &field);
-            req->setBodyParam(field[0], field[1], false);
+            if(field.size() > 1)
+              req->setBodyParam(field[0], field[1], false);
+            else
+              req->setBodyParam(field[0], "", false);
           }
         }else{
           body.clear();
