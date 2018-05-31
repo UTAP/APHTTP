@@ -76,6 +76,12 @@ Request *parse_headers(char *headers) {
             split(body[i], "=", 2, &field);
             req->setBodyParam(field[0], field[1], false);
           }
+        }else{
+          body.clear();
+          split(line, "=", 10, &body);
+          if(body.size() > 1){
+            req->setBodyParam(body[0], body[1], false);
+          }
         }
       }
     }
