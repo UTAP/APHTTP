@@ -12,7 +12,7 @@ const std::string SERVER_NAME = "AP HTTP Server";
 class Response {
 public:
   Response();
-  char *print(int&);
+  char *print(int &);
   void log();
   void setHeader(std::string name, std::string value);
   void setBody(std::string _body);

@@ -35,7 +35,7 @@ void split(string str, string separator, int max, vector<string> *results) {
 Request *parse_headers(char *headers) {
   Request *req;
 
-  try{
+  try {
     int i = 0;
     char *pch;
     for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
@@ -70,31 +70,30 @@ Request *parse_headers(char *headers) {
         }
         vector<string> body;
         split(line, "&", 10, &body);
-        cout<<line<<endl;
+        cout << line << endl;
         if (body.size() > 1) {
           for (size_t i = 0; i < body.size(); i++) {
             vector<string> field;
             split(body[i], "=", 2, &field);
-            if(field.size() > 1)
+            if (field.size() > 1)
               req->setBodyParam(field[0], field[1], false);
             else
               req->setBodyParam(field[0], "", false);
           }
-        }else{
+        } else {
           body.clear();
           split(line, "=", 10, &body);
-          if(body.size() > 1){
+          if (body.size() > 1) {
             req->setBodyParam(body[0], body[1], false);
           }
         }
       }
     }
-  } catch(...) {
+  } catch (...) {
     throw Server::Exception("Error on parsing header");
   }
   return req;
 }
-
 
 Server::Server(int _port) { port = _port; }
 
@@ -165,14 +164,12 @@ void Server::run() {
     int si;
     char *header_buffer = res->print(si);
     int wr = write(newsc, header_buffer, si);
-    if(wr != si)
+    if (wr != si)
       throw Exception("Write error");
     close(newsc);
   }
 }
 
-const char* Server::Exception::getMessage(){
-  return pMessage;
-}
+const char *Server::Exception::getMessage() { return pMessage; }
 
 Response *RequestHandler::callback(Request *req) { return NULL; }

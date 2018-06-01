@@ -20,6 +20,7 @@ public:
 
 class ShowImage : public RequestHandler {
   string filePath;
+
 public:
   ShowImage(string _filePath) { filePath = _filePath; }
   Response *callback(Request *req) {
@@ -44,8 +45,6 @@ public:
     return res;
   }
 };
-
-
 
 int main(int argc, char **argv) {
   try {
