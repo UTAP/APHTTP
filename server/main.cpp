@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
     server.get("/home", new ShowPage("htmlFiles/home.html"));
     server.get("/login_page", new ShowPage("htmlFiles/login.html"));
     server.post("/login", new LoginHandler());
+    server.get("/", new ShowPage("htmlFiles/home.html"));
     server.run();
   } catch (Server::Exception e) {
     cout << e.getMessage() << endl;
