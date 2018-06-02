@@ -67,26 +67,26 @@ Request *parse_headers(char *headers) {
         split(line, ": ", 2, &R);
         if (R.size() == 2) {
           req->setHeader(R[0], R[1], false);
-        }
-        vector<string> body;
-        split(line, "&", 10, &body);
-        cout << line << endl;
-        if (body.size() > 1) {
-          for (size_t i = 0; i < body.size(); i++) {
-            vector<string> field;
-            split(body[i], "=", 2, &field);
-            if (field.size() > 1)
-              req->setBodyParam(field[0], field[1], false);
-            else
-              req->setBodyParam(field[0], "", false);
-          }
-        } else {
-          body.clear();
-          split(line, "=", 10, &body);
+        } else{
+          vector<string> body;
+          split(line, "&", 10, &body);
           if (body.size() > 1) {
-            req->setBodyParam(body[0], body[1], false);
-          }else if(body.size() == 1){
-            req->setBodyParam(body[0], "", false);
+            for (size_t i = 0; i < body.size(); i++) {
+              vector<string> field;
+              split(body[i], "=", 2, &field);
+              if (field.size() > 1)
+                req->setBodyParam(field[0], field[1], false);
+              else
+                req->setBodyParam(field[0], "", false);
+            }
+          } else {
+            body.clear();
+            split(line, "=", 10, &body);
+            if (body.size() > 1) {
+              req->setBodyParam(body[0], body[1], false);
+            }else if(body.size() == 1){
+              req->setBodyParam(body[0], "", false);
+            }
           }
         }
       }
