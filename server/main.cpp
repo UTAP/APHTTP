@@ -20,6 +20,7 @@ public:
 
 class ShowImage : public RequestHandler {
   string filePath;
+
 public:
   ShowImage(string _filePath) { filePath = _filePath; }
   Response *callback(Request *req) {
@@ -45,8 +46,6 @@ public:
   }
 };
 
-
-
 int main(int argc, char **argv) {
   try {
     Server server(argc > 1 ? atoi(argv[1]) : 5000);
@@ -54,6 +53,7 @@ int main(int argc, char **argv) {
     server.get("/home", new ShowPage("htmlFiles/home.html"));
     server.get("/login_page", new ShowPage("htmlFiles/login.html"));
     server.post("/login", new LoginHandler());
+    server.get("/", new ShowPage("htmlFiles/home.html"));
     server.run();
   } catch (Server::Exception e) {
     cout << e.getMessage() << endl;
