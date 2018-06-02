@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-#define BUFSIZE 8096
+#define BUFSIZE 4145152
 
 const std::string SERVER_NAME = "AP HTTP Server";
 

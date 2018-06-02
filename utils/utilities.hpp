@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#define BUFFER_SIZE 1036288
+#define BUFFER_SIZE 4145152
 
 using namespace std;
 struct comp {

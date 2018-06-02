@@ -85,6 +85,8 @@ Request *parse_headers(char *headers) {
           split(line, "=", 10, &body);
           if(body.size() > 1){
             req->setBodyParam(body[0], body[1], false);
+          }else if(body.size() == 1){
+            req->setBodyParam(body[0], "", false);
           }
         }
       }
