@@ -67,7 +67,7 @@ Request *parse_headers(char *headers) {
         split(line, ": ", 2, &R);
         if (R.size() == 2) {
           req->setHeader(R[0], R[1], false);
-        } else{
+        } else {
           vector<string> body;
           split(line, "&", 10, &body);
           if (body.size() > 1) {
@@ -84,7 +84,7 @@ Request *parse_headers(char *headers) {
             split(line, "=", 10, &body);
             if (body.size() > 1) {
               req->setBodyParam(body[0], body[1], false);
-            }else if(body.size() == 1){
+            } else if (body.size() == 1) {
               req->setBodyParam(body[0], "", false);
             }
           }
