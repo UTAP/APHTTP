@@ -177,8 +177,6 @@ void Server::run() {
 
 const char *Server::Exception::getMessage() { return pMessage; }
 
-Response *RequestHandler::callback(Request *req) { return NULL; }
-
 ShowFile::ShowFile(string _filePath, string _fileType) {
   filePath = _filePath;
   fileType = _fileType;

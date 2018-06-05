@@ -10,7 +10,7 @@
 
 class RequestHandler {
 public:
-  virtual Response *callback(Request *req);
+  virtual Response *callback(Request *req) = 0;
 };
 
 class ShowFile : public RequestHandler {
