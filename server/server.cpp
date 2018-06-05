@@ -175,3 +175,22 @@ void Server::run() {
 const char *Server::Exception::getMessage() { return pMessage; }
 
 Response *RequestHandler::callback(Request *req) { return NULL; }
+
+ShowFile::ShowFile(string _filePath, string _fileType) {
+  filePath = _filePath;
+  fileType = _fileType;
+}
+
+Response *ShowFile::callback(Request *req) {
+  Response *res = new Response;
+  res->setHeader("Content-Type", fileType);
+  string body = readFile(filePath.c_str());
+  res->setBody(readFile(filePath.c_str()));
+  return res;
+}
+
+ShowPage::ShowPage(string filePath)
+    : ShowFile(filePath, "text/" + getExtention(filePath)) {}
+
+ShowImage::ShowImage(string filePath)
+    : ShowFile(filePath, "image/" + getExtention(filePath)) {}

@@ -13,6 +13,27 @@ public:
   virtual Response *callback(Request *req);
 };
 
+class ShowFile : public RequestHandler {
+  string filePath;
+  string fileType;
+
+public:
+  ShowFile(string filePath, string fileType);
+  Response *callback(Request *req);
+};
+
+class ShowPage : public ShowFile {
+
+public:
+  ShowPage(string _filePath);
+};
+
+class ShowImage : public ShowFile {
+
+public:
+  ShowImage(string _filePath);
+};
+
 class Server {
 public:
   Server(int port = 5000);

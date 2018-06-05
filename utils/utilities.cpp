@@ -137,3 +137,8 @@ string urlDecode(string const &str) {
   }
   return result;
 }
+
+std::string getExtention(string filePath) {
+  size_t pos = filePath.find_last_of(".");
+  return filePath.substr(pos != string::npos ? pos + 1 : filePath.size());
+}
