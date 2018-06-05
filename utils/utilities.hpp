@@ -10,7 +10,8 @@ struct comp {
   bool operator()(const std::string &lhs, const std::string &rhs) const;
 };
 
-typedef std::map<std::string, std::string, comp> cimap;
+typedef std::map<std::string, std::string, comp>
+    cimap; // Case-Insensetive <string, string> map
 
 std::string readFile(const char *filename);
 std::string readFile(std::string filename);
