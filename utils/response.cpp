@@ -5,9 +5,18 @@
 
 using namespace std;
 
-Response::Response() {
+map<int, string> getHttpPhrases() {
+  map<int, string> httpPhrase;
+  httpPhrase[200] = "OK";
+  httpPhrase[303] = "See Other";
+  return httpPhrase;
+}
+
+map<int, string> httpPhrase = getHttpPhrases();
+
+Response::Response(int code) {
   this->code = code;
-  this->phrase = "Ok";
+  this->phrase = httpPhrase[code];
   this->headers["Content-Type"] = "text/plain";
 }
 

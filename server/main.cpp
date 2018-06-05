@@ -40,7 +40,7 @@ public:
     string password = req->getBodyParam("password");
     cout << "Received Data: " << username << " - " << password << endl;
     res->setHeader("Content-Type", "text/html");
-    res->setBody(readFile("htmlFiles/logincss.html"));
+    res->setBody("Location: /\r\n");
     res->setSessionId("123");
     return res;
   }

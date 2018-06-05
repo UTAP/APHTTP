@@ -10,7 +10,7 @@ const std::string SERVER_NAME = "AP HTTP Server";
 
 class Response {
 public:
-  Response();
+  Response(int code = 200);
   char *print(int &);
   void log();
   void setHeader(std::string name, std::string value);
