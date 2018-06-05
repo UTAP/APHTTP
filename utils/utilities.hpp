@@ -13,6 +13,7 @@ struct comp {
 typedef std::map<std::string, std::string, comp> cimap;
 
 std::string readFile(const char *filename);
+std::string readFile(std::string filename);
 std::string getExtention(std::string filePath);
 void printVector(std::vector<std::string>);
 std::vector<std::string> split(std::string s, std::string d);

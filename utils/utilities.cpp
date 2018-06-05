@@ -37,6 +37,10 @@ string readFile(const char *filename) {
   return s;
 }
 
+std::string readFile(std::string filename) {
+  return readFile(filename.c_str());
+}
+
 vector<string> split(string s, string delimiter) {
   vector<string> tokens;
   s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
