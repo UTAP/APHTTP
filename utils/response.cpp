@@ -30,6 +30,8 @@ void Response::setStatus(int _code, string _phrase) {
   code = _code;
 }
 
+void Response::setStatus(int _code) { setStatus(_code, httpPhrase[_code]); }
+
 char *Response::print(int &size) {
   char *header_buffer = new char[BUFSIZE];
   string h = "";
