@@ -20,11 +20,11 @@ public:
 int main(int argc, char **argv) {
   try {
     Server server(argc > 1 ? atoi(argv[1]) : 5000);
-    server.get("/home_icon", new ShowImage("htmlFiles/home.png"));
-    server.get("/home", new ShowPage("htmlFiles/home.html"));
-    server.get("/login_page", new ShowPage("htmlFiles/logincss.html"));
+    server.get("/home_icon", new ShowImage("static/home.png"));
+    server.get("/home", new ShowPage("static/home.html"));
+    server.get("/login_page", new ShowPage("static/logincss.html"));
     server.post("/login", new LoginHandler());
-    server.get("/", new ShowPage("htmlFiles/home.html"));
+    server.get("/", new ShowPage("static/home.html"));
     server.run();
   } catch (Server::Exception e) {
     cout << e.getMessage() << endl;

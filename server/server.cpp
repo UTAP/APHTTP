@@ -115,7 +115,7 @@ class NotFoundHandler : public RequestHandler {
 public:
   Response *callback(Request *req) {
     Response *res = new Response;
-    res->setBody(readFile("htmlFiles/404.html"));
+    res->setBody(readFile("static/404.html"));
     res->setHeader("Content-Type", "text/html");
     res->setStatus(404, "Not Found");
     return res;
