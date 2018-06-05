@@ -19,6 +19,10 @@ public:
     body += "a random number in [1, 10] is: ";
     body += to_string(rand() % 10 + 1);
     body += "</p>";
+    body += "<p>";
+    body += "SeddionId: ";
+    body += req->getSessionId();
+    body += "</p>";
     body += "</body>";
     body += "</html>";
     res->setBody(body);
@@ -32,7 +36,9 @@ public:
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
     cout << "username: " << username << ",\tpassword: " << password << endl;
-    return Response::redirect("/");
+    Response *res = Response::redirect("/");
+    res->setSessionId("SID");
+    return res;
   }
 };
 
