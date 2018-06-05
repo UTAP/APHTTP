@@ -53,6 +53,6 @@ int main(int argc, char **argv) {
     server.get("/", new ShowPage("static/home.html"));
     server.run();
   } catch (Server::Exception e) {
-    cout << e.getMessage() << endl;
+    cerr << e.getMessage() << endl;
   }
 }

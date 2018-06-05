@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     server.get("/", new ShowPage("static/home.html"));  // serve static page
     server.run();
   } catch (Server::Exception e) {
-    cout << e.getMessage() << endl;
+    cerr << e.getMessage() << endl;
   }
 }
 ```
