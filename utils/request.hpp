@@ -2,7 +2,6 @@
 #define __REQUEST__
 #include "../utils/include.hpp"
 #include "../utils/utilities.hpp"
-#include <map>
 #include <string>
 
 #define BUFSIZE 4145152

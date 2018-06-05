@@ -1,6 +1,7 @@
 #include "request.hpp"
 #include "../utils/utilities.hpp"
 #include <iostream>
+#include <map>
 #include <vector>
 
 using namespace std;

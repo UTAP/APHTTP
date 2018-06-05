@@ -1,13 +1,14 @@
 #include "response.hpp"
 #include <cstring>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
 Response::Response() {
-  code = 200;
-  phrase = "Ok";
-  headers["Content-Type"] = "text/plain";
+  this->code = code;
+  this->phrase = "Ok";
+  this->headers["Content-Type"] = "text/plain";
 }
 
 int Response::getStatusCode() { return code; }
