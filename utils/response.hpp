@@ -4,8 +4,6 @@
 #include "../utils/utilities.hpp"
 #include <string>
 
-#define BUFSIZE 4145152
-
 const std::string SERVER_NAME = "AP HTTP Server";
 
 class Response {

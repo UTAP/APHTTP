@@ -4,8 +4,6 @@
 #include "../utils/utilities.hpp"
 #include <string>
 
-#define BUFSIZE 4145152
-
 class Request {
 public:
   Request(std::string method = "GET");
