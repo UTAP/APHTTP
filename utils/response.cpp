@@ -9,6 +9,7 @@ map<int, string> getHttpPhrases() {
   map<int, string> httpPhrase;
   httpPhrase[200] = "OK";
   httpPhrase[303] = "See Other";
+  httpPhrase[404] = "Not Found";
   return httpPhrase;
 }
 

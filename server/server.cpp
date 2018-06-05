@@ -97,7 +97,8 @@ Request *parse_headers(char *headers) {
   return req;
 }
 
-Server::Server(int _port) { port = _port; }
+Server::Server(int _port, string _notFoundErrPage)
+    : port(_port), notFoundErrPage(_notFoundErrPage) {}
 
 void Server::get(string path, RequestHandler *handler) {
   Route *route = new Route(GET, path);
@@ -112,12 +113,14 @@ void Server::post(string path, RequestHandler *handler) {
 }
 
 class NotFoundHandler : public RequestHandler {
+  string notFoundErrPage;
+
 public:
+  NotFoundHandler(string notFoundErrPage) : notFoundErrPage(notFoundErrPage) {}
   Response *callback(Request *req) {
-    Response *res = new Response;
-    res->setBody(readFile("static/404.html"));
-    res->setHeader("Content-Type", "text/html");
-    res->setStatus(404, "Not Found");
+    Response *res = new Response(404);
+    res->setHeader("Content-Type", "text/" + getExtention(notFoundErrPage));
+    res->setBody(readFile(notFoundErrPage.c_str()));
     return res;
   }
 };
@@ -136,7 +139,7 @@ void Server::run() {
 
   listen(sc, 5);
 
-  RequestHandler *notFoundHandler = new NotFoundHandler();
+  RequestHandler *notFoundHandler = new NotFoundHandler(notFoundErrPage);
   struct sockaddr_in cli_addr;
   socklen_t clilen;
   clilen = sizeof(cli_addr);
@@ -184,7 +187,6 @@ ShowFile::ShowFile(string _filePath, string _fileType) {
 Response *ShowFile::callback(Request *req) {
   Response *res = new Response;
   res->setHeader("Content-Type", fileType);
-  string body = readFile(filePath.c_str());
   res->setBody(readFile(filePath.c_str()));
   return res;
 }

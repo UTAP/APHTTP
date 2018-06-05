@@ -36,11 +36,12 @@ public:
 
 class Server {
 public:
-  Server(int port = 5000);
+  Server(int port = 5000, std::string notFoundErrPage = "static/404.html");
   void run();
   void get(std::string path, RequestHandler *handler);
   void post(std::string path, RequestHandler *handler);
   class Exception : public std::exception {
+
   public:
     Exception() {}
     Exception(const char *pStr) { pMessage = pStr; }
@@ -54,5 +55,6 @@ private:
   int sc;
   int port;
   std::vector<Route *> routes;
+  std::string notFoundErrPage;
 };
 #endif
