@@ -31,6 +31,7 @@ public:
   Response *callback(Request *req) {
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
+    cout << "username: " << username << ",\tpassword: " << password << endl;
     return Response::redirect("/");
   }
 };
@@ -38,12 +39,11 @@ public:
 int main(int argc, char **argv) {
   srand(time(NULL)); // for rand
   try {
-    Server server(argc > 1 ? atoi(argv[1]) : 5000);
-    server.get("/home_icon", new ShowImage("static/home.png"));
-    server.get("/home", new ShowPage("static/home.html"));
-    server.get("/login_page", new ShowPage("static/logincss.html"));
-    server.get("/rand", new RandomNumberHandler());
+    Server server(argc > 1 ? atoi(argv[1]) : 5000, "static/404.html");
+    server.get("/login", new ShowPage("static/logincss.html"));
     server.post("/login", new LoginHandler());
+    server.get("/rand", new RandomNumberHandler());
+    server.get("/home.png", new ShowImage("static/home.png"));
     server.get("/", new ShowPage("static/home.html"));
     server.run();
   } catch (Server::Exception e) {
