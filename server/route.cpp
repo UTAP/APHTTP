@@ -1,6 +1,8 @@
 #include "route.hpp"
 #include "server.hpp"
 
+using namespace std;
+
 Route::Route(Method _method, string _path) {
   method = _method;
   path = _path;

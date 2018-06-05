@@ -6,15 +6,14 @@
 
 #define BUFFER_SIZE 4145152
 
-using namespace std;
 struct comp {
-  bool operator()(const std::string &lhs, const string &rhs) const;
+  bool operator()(const std::string &lhs, const std::string &rhs) const;
 };
 
 typedef std::map<std::string, std::string, comp> cimap;
 
 std::string readFile(const char *filename);
-std::string getExtention(string filePath);
+std::string getExtention(std::string filePath);
 void printVector(std::vector<std::string>);
 std::vector<std::string> split(std::string s, std::string d);
 

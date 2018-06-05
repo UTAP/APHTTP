@@ -14,24 +14,24 @@ public:
 };
 
 class ShowFile : public RequestHandler {
-  string filePath;
-  string fileType;
+  std::string filePath;
+  std::string fileType;
 
 public:
-  ShowFile(string filePath, string fileType);
+  ShowFile(std::string filePath, std::string fileType);
   Response *callback(Request *req);
 };
 
 class ShowPage : public ShowFile {
 
 public:
-  ShowPage(string _filePath);
+  ShowPage(std::string _filePath);
 };
 
 class ShowImage : public ShowFile {
 
 public:
-  ShowImage(string _filePath);
+  ShowImage(std::string _filePath);
 };
 
 class Server {
