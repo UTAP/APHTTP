@@ -11,11 +11,11 @@ struct comp {
 };
 
 typedef std::map<std::string, std::string, comp>
-    cimap; // Case-Insensetive <string, string> map
+    cimap; // Case-Insensitive <string, string> map
 
 std::string readFile(const char *filename);
 std::string readFile(std::string filename);
-std::string getExtention(std::string filePath);
+std::string getExtension(std::string filePath);
 void printVector(std::vector<std::string>);
 std::vector<std::string> split(std::string s, std::string d);
 

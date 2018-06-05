@@ -119,7 +119,7 @@ public:
   NotFoundHandler(string notFoundErrPage) : notFoundErrPage(notFoundErrPage) {}
   Response *callback(Request *req) {
     Response *res = new Response(404);
-    res->setHeader("Content-Type", "text/" + getExtention(notFoundErrPage));
+    res->setHeader("Content-Type", "text/" + getExtension(notFoundErrPage));
     res->setBody(readFile(notFoundErrPage.c_str()));
     return res;
   }
@@ -190,7 +190,7 @@ Response *ShowFile::callback(Request *req) {
 }
 
 ShowPage::ShowPage(string filePath)
-    : ShowFile(filePath, "text/" + getExtention(filePath)) {}
+    : ShowFile(filePath, "text/" + getExtension(filePath)) {}
 
 ShowImage::ShowImage(string filePath)
-    : ShowFile(filePath, "image/" + getExtention(filePath)) {}
+    : ShowFile(filePath, "image/" + getExtension(filePath)) {}
