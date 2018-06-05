@@ -20,6 +20,7 @@ public:
   std::string getStatusPhrase();
   std::string getHeader(std::string name);
   void setSessionId(std::string sessionId);
+  static Response *redirect(string url);
 
 private:
   int code;

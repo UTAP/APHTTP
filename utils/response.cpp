@@ -77,3 +77,9 @@ string Response::getHeader(string name) { return ""; }
 void Response::setSessionId(string sessionId) {
   setHeader("set-cookie", "sessionId=" + sessionId + ";");
 }
+
+Response *Response::redirect(string url) {
+  Response *res = new Response(303);
+  res->setHeader("Location", url);
+  return res;
+}

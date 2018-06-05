@@ -6,14 +6,9 @@ using namespace std;
 class LoginHandler : public RequestHandler {
 public:
   Response *callback(Request *req) {
-    Response *res = new Response;
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
-    cout << "Received Data: " << username << " - " << password << endl;
-    res->setHeader("Content-Type", "text/plain");
-    res->setBody("Done!");
-    res->setSessionId("123");
-    return res;
+    return Response::redirect("/");
   }
 };
 
