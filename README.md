@@ -1,6 +1,7 @@
 AP HTTP
 ===
-[![code style: LLVM](https://img.shields.io/badge/code_style-LLVM-brightgreen.svg?style=flat-square)](https://llvm.org/docs/CodingStandards.html)
+[![Travis (.org)](https://travis-ci.com/UTAP/APHTTP.svg)](https://travis-ci.com/UTAP/APHTTP)
+[![code style: LLVM](https://img.shields.io/badge/code_style-LLVM-brightgreen.svg)](https://llvm.org/docs/CodingStandards.html)
 
 **AP HTTP::_server_** is a simple web application server-side framework for C++ based on simplified versions of [W++](http://konteck.github.io/wpp/), [HappyHTTP](http://scumways.com/happyhttp/happyhttp.html), and [cpp-netlib](http://cpp-netlib.org/).
 
