@@ -38,6 +38,7 @@ Request *parse_headers(char *headers) {
   try {
     int i = 0;
     char *pch;
+    cerr << ">\t" << headers << endl;
     for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
       if (i++ == 0) {
         vector<string> R;
@@ -152,6 +153,11 @@ void Server::run() {
 
     char headers[BUFSIZE + 1];
     long ret = read(newsc, headers, BUFSIZE);
+    cerr << "ret: " << ret << endl;
+    if (!ret) {
+      close(newsc);
+      continue;
+    }
     headers[ret >= 0 ? ret : 0] = 0;
     Request *req = parse_headers(headers);
     req->log();
