@@ -42,7 +42,7 @@ char *Response::print(int &size) {
     h += it->first + ": " + it->second + "\r\n";
   h += "\r\n";
   strcpy(header_buffer, h.c_str());
-  int i;
+  size_t i;
   int hbsize = strlen(header_buffer);
   for (i = 0; i < body.size(); i++) {
     header_buffer[hbsize + i] = body[i];
