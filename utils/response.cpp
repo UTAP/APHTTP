@@ -38,7 +38,7 @@ char *Response::print(int &size) {
   h += "HTTP/1.0 " + to_string(code) + " " + phrase + "\r\n";
   h += "Server: " + SERVER_NAME + " \r\n";
   h += "Content-Length: " + to_string(body.size()) + "\r\n";
-  for (auto it = headers.begin(); it != headers.end(); it++)
+  for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
     h += it->first + ": " + it->second + "\r\n";
   h += "\r\n";
   strcpy(header_buffer, h.c_str());
@@ -62,7 +62,7 @@ void Response::log() {
   log += K + string("Status:\t") + NC + (code == 200 ? G : R) +
          to_string(code) + " " + phrase + NC + string("\n");
   log += K + string("Headers:") + NC + string("\n");
-  for (auto it = headers.begin(); it != headers.end(); it++)
+  for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
   log += K + string("Body:\n") + NC + body + string("\n");

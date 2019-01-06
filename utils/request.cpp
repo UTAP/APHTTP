@@ -39,7 +39,7 @@ void Request::setHeader(string key, string value, bool encode) {
 
 string Request::getBody() {
   string bs = "";
-  for (auto it = body.begin(); it != body.end(); it++)
+  for (auto it = body.begin(); !body.empty() && it != body.end(); it++)
     bs += it->first + "=" + it->second + "&";
   return bs;
 }
@@ -67,17 +67,17 @@ void Request::log() {
       K + string("Method:\t") + NC + (method ? "POST" : "GET") + string("\n");
   log += K + string("Path:\t") + NC + path + string("\n");
   log += K + string("Headers:") + NC + string("\n");
-  for (auto it = headers.begin(); it != headers.end(); it++)
+  for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
   log += "[ " + K + string("SessionId:\t") + NC + this->getSessionId() + " ]" +
          string("\n");
   log += K + string("Query:") + NC + string("\n");
-  for (auto it = query.begin(); it != query.end(); it++)
+  for (auto it = query.begin(); !query.empty() && it != query.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
   log += K + string("Body:") + NC + string("\n");
-  for (auto it = body.begin(); it != body.end(); it++)
+  for (auto it = body.begin(); !body.empty() && it != body.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
   log += H + string("------------------------") + NC + string("\n");
@@ -86,8 +86,8 @@ void Request::log() {
 
 cimap Request::getHeaders() {
   vector<string> res;
-  for (map<string, string>::iterator i = headers.begin(); i != headers.end();
-       i++) {
+  for (map<string, string>::iterator i = headers.begin();
+       !headers.empty() && i != headers.end(); i++) {
     res.push_back(i->first);
     res.push_back(i->second);
   }
@@ -98,7 +98,8 @@ string Request::getQueryString() {
   if (query.empty())
     return "";
   string res = "?";
-  for (map<string, string>::iterator i = query.begin(); i != query.end(); i++) {
+  for (map<string, string>::iterator i = query.begin();
+       !query.empty() && i != query.end(); i++) {
     res += i->first;
     res += "=";
     res += i->second;
