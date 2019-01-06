@@ -36,7 +36,7 @@ public:
     string username = req->getBodyParam("username");
     string password = req->getBodyParam("password");
     cout << "username: " << username << ",\tpassword: " << password << endl;
-    Response *res = Response::redirect("/");
+    Response *res = Response::redirect("/rand");
     res->setSessionId("SID");
     return res;
   }
