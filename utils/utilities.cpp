@@ -2,22 +2,25 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
-char easytolower(char in) {
+char easyToLowerCase(char in) {
   if (in <= 'Z' && in >= 'A')
     return in - ('Z' - 'z');
   return in;
 }
 
-string tolower(string s) {
-  std::transform(s.begin(), s.end(), s.begin(), easytolower);
+string toLowerCase(string s) {
+  transform(s.begin(), s.end(), s.begin(), easyToLowerCase);
   return s;
 }
+
 bool comp::operator()(const string &lhs, const string &rhs) const {
-  return tolower(lhs) < tolower(rhs);
+  return toLowerCase(lhs) < toLowerCase(rhs);
 }
 
 string readFile(const char *filename) {
@@ -37,13 +40,12 @@ string readFile(const char *filename) {
   return s;
 }
 
-std::string readFile(std::string filename) {
-  return readFile(filename.c_str());
-}
+string readFile(string filename) { return readFile(filename.c_str()); }
 
-vector<string> split(string s, string delimiter) {
+vector<string> split(string s, string delimiter, bool trim) {
   vector<string> tokens;
-  s.erase(std::remove(s.begin(), s.end(), ' '), s.end());
+  if (trim)
+    s.erase(remove(s.begin(), s.end(), ' '), s.end());
   size_t pos = 0;
   string token;
   while ((pos = s.find(delimiter)) != string::npos) {
@@ -142,7 +144,28 @@ string urlDecode(string const &str) {
   return result;
 }
 
-std::string getExtension(string filePath) {
+string getExtension(string filePath) {
   size_t pos = filePath.find_last_of(".");
   return filePath.substr(pos != string::npos ? pos + 1 : filePath.size());
+}
+
+vector<string> tokenize(const string &cnt, string delimiter) {
+  vector<string> res;
+  istringstream is(cnt);
+  string part;
+  while (getline(is, part, ','))
+    res.push_back(part);
+  return res;
+}
+
+void replaceAll(std::string &str, const std::string &from,
+                const std::string &to) {
+  if (from.empty())
+    return;
+  size_t start_pos = 0;
+  while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length(); // In case 'to' contains 'from', like replacing
+                              // 'x' with 'yx'
+  }
 }
