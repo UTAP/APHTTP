@@ -15,13 +15,13 @@
 
 using namespace std;
 
-void split(string str, string separator, int max, vector<string> *results) {
+void split(string str, string separator, int max, vector<string> &results) {
   int i = 0;
   size_t found = str.find_first_of(separator);
 
   while (found != string::npos) {
     if (found > 0)
-      results->push_back(str.substr(0, found));
+      results.push_back(str.substr(0, found));
     str = str.substr(found + 1);
     found = str.find_first_of(separator);
 
@@ -29,71 +29,127 @@ void split(string str, string separator, int max, vector<string> *results) {
       break;
   }
   if (str.length() > 0)
-    results->push_back(str);
+    results.push_back(str);
 }
 
-Request *parse_headers(char *headers) {
+Request *parseRawReq(char *headersRaw) {
   Request *req;
-
+  string boundary;
+  string lastFieldKey;
+  string lastFieldValue;
   try {
-    int i = 0;
-    char *pch;
-    cerr << ">\t" << headers << endl;
-    for (pch = strtok(headers, "\r\n"); pch; pch = strtok(NULL, "\r\n")) {
-      if (i++ == 0) {
-        vector<string> R;
-        string line(pch);
-
-        split(line, " ", 3, &R);
+    enum State { REQ, HEADER, BODY, BODY_HEADER, BODY_BODY };
+    State state = REQ;
+    vector<string> headers = split(string(headersRaw), "\r\n", false);
+    for (size_t headerIndex = 0; headerIndex < headers.size(); headerIndex++) {
+      string line = headers[headerIndex];
+      switch (state) {
+      case REQ: {
+        vector<string> R = split(line, " ", false);
         if (R.size() != 3) {
-          throw Server::Exception("Invalid header");
+          throw Server::Exception("Invalid header (request line)");
         }
         req = new Request(R[0]);
         req->setPath(R[1]);
         size_t pos = req->getPath().find('?');
         if (pos != string::npos) {
-          vector<string> Q1;
-          split(req->getPath().substr(pos + 1), "&", -1, &Q1);
+          vector<string> Q1 = split(req->getPath().substr(pos + 1), "&", false);
           for (vector<string>::size_type q = 0; q < Q1.size(); q++) {
-            vector<string> Q2;
-            split(Q1[q], "=", -1, &Q2);
+            vector<string> Q2 = split(Q1[q], "=", false);
             if (Q2.size() == 2)
               req->setQueryParam(Q2[0], Q2[1], false);
+            else
+              throw Server::Exception("Invalid query");
           }
           req->setPath(req->getPath().substr(0, pos));
         }
-      } else {
-        vector<string> R;
-        string line(pch);
-        split(line, ": ", 2, &R);
-        if (R.size() == 2) {
-          req->setHeader(R[0], R[1], false);
-        } else {
-          vector<string> body;
-          split(line, "&", 10, &body);
-          if (body.size() > 1) {
-            for (size_t i = 0; i < body.size(); i++) {
-              vector<string> field;
-              split(body[i], "=", 2, &field);
-              if (field.size() > 1)
-                req->setBodyParam(field[0], field[1], false);
-              else
-                req->setBodyParam(field[0], "", false);
-            }
-          } else {
-            body.clear();
-            split(line, "=", 10, &body);
-            if (body.size() > 1) {
-              req->setBodyParam(body[0], body[1], false);
-            } else if (body.size() == 1) {
-              req->setBodyParam(body[0], "", false);
-            }
+        state = HEADER;
+      } break;
+      case HEADER: {
+        if (line == "") {
+          state = BODY;
+          if (req->getHeader("Content-Type")
+                  .substr(0, string("multipart/form-data").size()) ==
+              "multipart/form-data") {
+            boundary =
+                req->getHeader("Content-Type")
+                    .substr(req->getHeader("Content-Type").find("boundary=") +
+                            string("boundary=").size());
           }
+          break;
         }
+        vector<string> R = split(line, ": ", false);
+        if (R.size() != 2)
+          throw Server::Exception("Invalid header");
+        req->setHeader(R[0], R[1], false);
+      } break;
+      case BODY: {
+        if (req->getHeader("Content-Type") == "") {
+        } else if (req->getHeader("Content-Type") ==
+                   "application/x-www-form-urlencoded") {
+          vector<string> body = split(line, "&", false);
+          for (size_t i = 0; i < body.size(); i++) {
+            vector<string> field = split(body[i], "=", false);
+            if (field.size() == 2)
+              req->setBodyParam(field[0], field[1], false);
+            else if (field.size() == 1)
+              req->setBodyParam(field[0], "", false);
+            else
+              throw Server::Exception("Invalid body");
+          }
+        } else if (req->getHeader("Content-Type")
+                       .substr(0, string("multipart/form-data").size()) ==
+                   "multipart/form-data") {
+          if (line == "--" + boundary || line == "--" + boundary + "--") {
+            lastFieldKey = "";
+            lastFieldValue = "";
+            state = BODY_HEADER;
+          }
+        } else {
+          throw Server::Exception("Unsupported body type");
+        }
+      } break;
+      case BODY_HEADER: {
+        if (line == "") {
+          state = BODY_BODY;
+          break;
+        }
+        vector<string> R = split(line, ": ", false);
+        if (R.size() != 2)
+          throw Server::Exception("Invalid header");
+        if (toLowerCase(R[0]) == toLowerCase("Content-Disposition")) {
+          vector<string> A = split(R[1], "; ", false);
+          for (size_t i = 0; i < A.size(); i++) {
+            vector<string> attr = split(A[i], "=", false);
+            if (attr.size() == 2) {
+              if (toLowerCase(attr[0]) == toLowerCase("name")) {
+                lastFieldKey = attr[1].substr(1, attr[1].size() - 2);
+              }
+            } else if (attr.size() == 1) {
+            } else
+              throw Server::Exception("Invalid body attribute");
+          }
+        } else if (toLowerCase(R[0]) == toLowerCase("Content-Type")) {
+          if (toLowerCase(R[1].substr(0, R[1].find("/"))) !=
+              toLowerCase("text"))
+            throw Server::Exception("Unsupported file type.");
+        }
+      } break;
+      case BODY_BODY: {
+        if (line == "--" + boundary || line == "--" + boundary + "--") {
+          req->setBodyParam(lastFieldKey,
+                            lastFieldValue.substr(string("\r\n").size()),
+                            false);
+          lastFieldKey = "";
+          lastFieldValue = "";
+          state = BODY_HEADER;
+        } else
+          lastFieldValue += "\r\n" + line;
+      } break;
       }
     }
   } catch (...) {
-    throw Server::Exception("Error on parsing header");
+    throw Server::Exception("Error on parsing request");
   }
   return req;
 }
@@ -151,14 +207,14 @@ void Server::run() {
     if (newsc < 0)
       throw Exception("Error on accept");
 
-    char headers[BUFSIZE + 1];
-    long ret = read(newsc, headers, BUFSIZE);
+    char data[BUFSIZE + 1];
+    long ret = read(newsc, data, BUFSIZE);
     if (!ret) {
       close(newsc);
       continue;
     }
-    headers[ret >= 0 ? ret : 0] = 0;
-    Request *req = parse_headers(headers);
+    data[ret >= 0 ? ret : 0] = 0;
+    Request *req = parseRawReq(data);
     req->log();
     Response *res = new Response();
     size_t i = 0;

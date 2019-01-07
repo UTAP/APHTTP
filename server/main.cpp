@@ -45,9 +45,9 @@ public:
 class UploadHandler : public RequestHandler {
 public:
   Response *callback(Request *req) {
-    string username = req->getBodyParam("username");
-    string password = req->getBodyParam("password");
-    cout << "username: " << username << ",\tpassword: " << password << endl;
+    string name = req->getBodyParam("file_name");
+    string file = req->getBodyParam("file");
+    cout << name << ":\n" << file << endl;
     Response *res = Response::redirect("/");
     return res;
   }
