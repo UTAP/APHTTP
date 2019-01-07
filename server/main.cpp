@@ -42,12 +42,25 @@ public:
   }
 };
 
+class UploadHandler : public RequestHandler {
+public:
+  Response *callback(Request *req) {
+    string username = req->getBodyParam("username");
+    string password = req->getBodyParam("password");
+    cout << "username: " << username << ",\tpassword: " << password << endl;
+    Response *res = Response::redirect("/");
+    return res;
+  }
+};
+
 int main(int argc, char **argv) {
   srand(time(NULL)); // for rand
   try {
     Server server(argc > 1 ? atoi(argv[1]) : 5000, "static/404.html");
     server.get("/login", new ShowPage("static/logincss.html"));
     server.post("/login", new LoginHandler());
+    server.get("/up", new ShowPage("static/upload_form.html"));
+    server.post("/up", new UploadHandler());
     server.get("/rand", new RandomNumberHandler());
     server.get("/home.png", new ShowImage("static/home.png"));
     server.get("/", new ShowPage("static/home.html"));

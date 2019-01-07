@@ -153,7 +153,6 @@ void Server::run() {
 
     char headers[BUFSIZE + 1];
     long ret = read(newsc, headers, BUFSIZE);
-    cerr << "ret: " << ret << endl;
     if (!ret) {
       close(newsc);
       continue;
