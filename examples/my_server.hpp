@@ -2,5 +2,5 @@
 
 class MyServer : public Server {
 public:
-  MyServer();
+  MyServer(int port = 5000);
 };
