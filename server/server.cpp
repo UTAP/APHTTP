@@ -255,3 +255,7 @@ ShowPage::ShowPage(string filePath)
 
 ShowImage::ShowImage(string filePath)
     : ShowFile(filePath, "image/" + getExtension(filePath)) {}
+
+void Server::setNotFoundErrPage(std::string _notFoundErrPage) {
+  notFoundErrPage = _notFoundErrPage;
+}

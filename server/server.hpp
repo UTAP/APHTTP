@@ -40,6 +40,7 @@ public:
   void run();
   void get(std::string path, RequestHandler *handler);
   void post(std::string path, RequestHandler *handler);
+  void setNotFoundErrPage(std::string);
   class Exception : public std::exception {
 
   public:
