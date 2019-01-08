@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Response* RandomNumberHandler::callback(Request *req) {
+Response *RandomNumberHandler::callback(Request *req) {
   Response *res = new Response;
   res->setHeader("Content-Type", "text/html");
   string body;
@@ -24,7 +24,7 @@ Response* RandomNumberHandler::callback(Request *req) {
   return res;
 }
 
-Response* LoginHandler::callback(Request *req) {
+Response *LoginHandler::callback(Request *req) {
   string username = req->getBodyParam("username");
   string password = req->getBodyParam("password");
   cout << "username: " << username << ",\tpassword: " << password << endl;
@@ -33,7 +33,7 @@ Response* LoginHandler::callback(Request *req) {
   return res;
 }
 
-Response* UploadHandler::callback(Request *req) {
+Response *UploadHandler::callback(Request *req) {
   string name = req->getBodyParam("file_name");
   string file = req->getBodyParam("file");
   cout << name << ":\n" << file << endl;

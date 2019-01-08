@@ -1,5 +1,5 @@
-#include "my_server.hpp"
 #include "handlers.hpp"
+#include "my_server.hpp"
 #include <cstdlib> // for rand and srand
 #include <ctime>   // for time
 #include <iostream>
