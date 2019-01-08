@@ -154,8 +154,7 @@ Request *parseRawReq(char *headersRaw) {
   return req;
 }
 
-Server::Server(int _port, string _notFoundErrPage)
-    : port(_port), notFoundErrPage(_notFoundErrPage) {}
+Server::Server(int _port) : port(_port) {}
 
 void Server::get(string path, RequestHandler *handler) {
   Route *route = new Route(GET, path);
@@ -238,12 +237,14 @@ void Server::run() {
 
 const char *Server::Exception::getMessage() { return pMessage; }
 
+
 ShowFile::ShowFile(string _filePath, string _fileType) {
   filePath = _filePath;
   fileType = _fileType;
 }
 
 Response *ShowFile::callback(Request *req) {
+  cout<<"---------------------------------------"<<endl;
   Response *res = new Response;
   res->setHeader("Content-Type", fileType);
   res->setBody(readFile(filePath.c_str()));
@@ -251,7 +252,8 @@ Response *ShowFile::callback(Request *req) {
 }
 
 ShowPage::ShowPage(string filePath)
-    : ShowFile(filePath, "text/" + getExtension(filePath)) {}
+    : ShowFile(filePath, "text/" + getExtension(filePath)) {
+    }
 
 ShowImage::ShowImage(string filePath)
     : ShowFile(filePath, "image/" + getExtension(filePath)) {}

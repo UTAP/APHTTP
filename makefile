@@ -3,7 +3,7 @@ STD=-std=c++11 -Wall -pedantic
 CF=$(STD)
 BUILD_DIR=build
 
-all: $(BUILD_DIR) server.out
+all: $(BUILD_DIR) myserver.out
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -23,11 +23,17 @@ $(BUILD_DIR)/server.o: server/server.cpp server/server.hpp server/route.hpp util
 $(BUILD_DIR)/route.o: server/route.cpp server/route.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp utils/include.hpp
 	$(CC) $(CF) -c server/route.cpp -o $(BUILD_DIR)/route.o
 
-$(BUILD_DIR)/server_main.o: server/main.cpp server/server.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp utils/include.hpp
-	$(CC) $(CF) -c server/main.cpp -o $(BUILD_DIR)/server_main.o
+$(BUILD_DIR)/handlers.o: examples/handlers.cpp server/server.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp utils/include.hpp
+	$(CC) $(CF) -c examples/handlers.cpp -o $(BUILD_DIR)/handlers.o
 
-server.out: $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/server_main.o
-	$(CC) $(CF) $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/server_main.o -o server.out
+$(BUILD_DIR)/my_server.o: examples/my_server.cpp server/server.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp utils/include.hpp
+	$(CC) $(CF) -c examples/my_server.cpp -o $(BUILD_DIR)/my_server.o
+
+$(BUILD_DIR)/main.o: examples/main.cpp server/server.hpp utils/utilities.hpp utils/response.hpp utils/request.hpp utils/include.hpp
+	$(CC) $(CF) -c examples/main.cpp -o $(BUILD_DIR)/main.o
+
+myserver.out: $(BUILD_DIR)/my_server.o $(BUILD_DIR)/main.o $(BUILD_DIR)/handlers.o $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o 
+	$(CC) $(CF) $(BUILD_DIR)/my_server.o $(BUILD_DIR)/main.o $(BUILD_DIR)/handlers.o $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o  -o myserver.out
 
 .PHONY: clean
 clean:

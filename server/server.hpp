@@ -16,7 +16,6 @@ public:
 class ShowFile : public RequestHandler {
   std::string filePath;
   std::string fileType;
-
 public:
   ShowFile(std::string filePath, std::string fileType);
   Response *callback(Request *req);
@@ -36,7 +35,7 @@ public:
 
 class Server {
 public:
-  Server(int port = 5000, std::string notFoundErrPage = "static/404.html");
+  Server(int port = 5000);
   void run();
   void get(std::string path, RequestHandler *handler);
   void post(std::string path, RequestHandler *handler);
