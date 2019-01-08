@@ -16,7 +16,6 @@ int main(int argc, char **argv) {
     server.post("/up", new UploadHandler());
     server.get("/rand", new RandomNumberHandler());
     server.get("/home.png", new ShowImage("static/home.png"));
-    server.get("/aa", new ShowImage("static/img.jpeg"));
     server.get("/", new ShowPage("static/home.html"));
     server.run();
   } catch (Server::Exception e) {
