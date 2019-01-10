@@ -2,6 +2,7 @@
 #include "../utils/utilities.hpp"
 #include <algorithm>
 #include <dirent.h>
+#include <errno.h>
 #include <fstream>
 #include <iostream>
 #include <limits.h>
@@ -183,15 +184,17 @@ public:
 
 void Server::run() {
   sc = socket(AF_INET, SOCK_STREAM, 0);
+  int sc_option = 1;
+  setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, &sc_option, sizeof(sc_option));
   if (sc < 0)
-    throw Exception("Error on opening socket");
+    throw Exception("Error on opening socket: " + string(strerror(errno)));
   struct sockaddr_in serv_addr;
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = INADDR_ANY;
   serv_addr.sin_port = htons(port);
 
   if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
-    throw Exception("Error on binding");
+    throw Exception("Error on binding: " + string(strerror(errno)));
   }
 
   ::listen(sc, 10);
@@ -204,7 +207,7 @@ void Server::run() {
   while (true) {
     newsc = ::accept(sc, (struct sockaddr *)&cli_addr, &clilen);
     if (newsc < 0)
-      throw Exception("Error on accept");
+      throw Exception("Error on accept: " + string(strerror(errno)));
 
     char data[BUFSIZE + 1];
     long ret = read(newsc, data, BUFSIZE);
@@ -232,7 +235,7 @@ void Server::run() {
     delete res;
     int wr = write(newsc, res_data.c_str(), si);
     if (wr != si)
-      throw Exception("Write error");
+      throw Exception("Write error: " + string(strerror(errno)));
     ::close(newsc);
   }
 }
