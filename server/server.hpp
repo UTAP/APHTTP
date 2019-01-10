@@ -10,6 +10,7 @@
 
 class RequestHandler {
 public:
+  virtual ~RequestHandler();
   virtual Response *callback(Request *req) = 0;
 };
 
@@ -37,19 +38,20 @@ public:
 class Server {
 public:
   Server(int port = 5000);
+  ~Server();
   void run();
   void get(std::string path, RequestHandler *handler);
   void post(std::string path, RequestHandler *handler);
   void setNotFoundErrPage(std::string);
-  class Exception : public std::exception {
 
+  class Exception : public std::exception {
   public:
     Exception() {}
-    Exception(const char *pStr) { pMessage = pStr; }
-    const char *getMessage();
+    Exception(const std::string);
+    std::string getMessage();
 
   private:
-    const char *pMessage;
+    std::string message;
   };
 
 private:
@@ -57,5 +59,6 @@ private:
   int port;
   std::vector<Route *> routes;
   std::string notFoundErrPage;
+  RequestHandler *notFoundHandler;
 };
 #endif

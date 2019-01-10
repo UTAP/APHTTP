@@ -154,7 +154,7 @@ Request *parseRawReq(char *headersRaw) {
   return req;
 }
 
-Server::Server(int _port) : port(_port) {}
+Server::Server(int _port) : port(_port), notFoundHandler(NULL) {}
 
 void Server::get(string path, RequestHandler *handler) {
   Route *route = new Route(GET, path);
@@ -190,26 +190,26 @@ void Server::run() {
   serv_addr.sin_addr.s_addr = INADDR_ANY;
   serv_addr.sin_port = htons(port);
 
-  if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0)
+  if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
     throw Exception("Error on binding");
+  }
 
-  listen(sc, 5);
+  ::listen(sc, 10);
 
-  RequestHandler *notFoundHandler = new NotFoundHandler(notFoundErrPage);
   struct sockaddr_in cli_addr;
   socklen_t clilen;
   clilen = sizeof(cli_addr);
   int newsc;
 
   while (true) {
-    newsc = accept(sc, (struct sockaddr *)&cli_addr, &clilen);
+    newsc = ::accept(sc, (struct sockaddr *)&cli_addr, &clilen);
     if (newsc < 0)
       throw Exception("Error on accept");
 
     char data[BUFSIZE + 1];
     long ret = read(newsc, data, BUFSIZE);
     if (!ret) {
-      close(newsc);
+      ::close(newsc);
       continue;
     }
     data[ret >= 0 ? ret : 0] = 0;
@@ -223,19 +223,31 @@ void Server::run() {
         break;
       }
     }
-    if (i == routes.size()) {
+    if (i == routes.size() && notFoundHandler) {
       res = notFoundHandler->callback(req);
     }
+    delete req;
     int si;
-    char *header_buffer = res->print(si);
-    int wr = write(newsc, header_buffer, si);
+    string res_data = res->print(si);
+    delete res;
+    int wr = write(newsc, res_data.c_str(), si);
     if (wr != si)
       throw Exception("Write error");
-    close(newsc);
+    ::close(newsc);
   }
 }
 
-const char *Server::Exception::getMessage() { return pMessage; }
+Server::~Server() {
+  if (sc >= 0)
+    ::close(sc);
+  delete notFoundHandler;
+  for (int i = 0; i < routes.size(); ++i)
+    delete routes[i];
+}
+
+Server::Exception::Exception(const string msg) { message = msg; }
+
+string Server::Exception::getMessage() { return message; }
 
 ShowFile::ShowFile(string _filePath, string _fileType) {
   filePath = _filePath;
@@ -243,7 +255,6 @@ ShowFile::ShowFile(string _filePath, string _fileType) {
 }
 
 Response *ShowFile::callback(Request *req) {
-  cout << "---------------------------------------" << endl;
   Response *res = new Response;
   res->setHeader("Content-Type", fileType);
   res->setBody(readFile(filePath.c_str()));
@@ -256,6 +267,9 @@ ShowPage::ShowPage(string filePath)
 ShowImage::ShowImage(string filePath)
     : ShowFile(filePath, "image/" + getExtension(filePath)) {}
 
-void Server::setNotFoundErrPage(std::string _notFoundErrPage) {
-  notFoundErrPage = _notFoundErrPage;
+void Server::setNotFoundErrPage(std::string notFoundErrPage) {
+  delete notFoundHandler;
+  notFoundHandler = new NotFoundHandler(notFoundErrPage);
 }
+
+RequestHandler::~RequestHandler() {}

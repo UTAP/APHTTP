@@ -15,6 +15,7 @@ private:
 
 public:
   Route(Method _method, std::string _path);
+  ~Route();
   bool isMatch(Method, std::string url);
   Response *handle(Request *req);
   void setHandler(RequestHandler *_handler);

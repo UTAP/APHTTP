@@ -32,23 +32,16 @@ void Response::setStatus(int _code, string _phrase) {
 
 void Response::setStatus(int _code) { setStatus(_code, httpPhrase[_code]); }
 
-char *Response::print(int &size) {
-  char *header_buffer = new char[BUFSIZE];
-  string h = "";
-  h += "HTTP/1.0 " + to_string(code) + " " + phrase + "\r\n";
-  h += "Server: " + SERVER_NAME + " \r\n";
-  h += "Content-Length: " + to_string(body.size()) + "\r\n";
+string Response::print(int &size) {
+  string header = "";
+  header += "HTTP/1.0 " + to_string(code) + " " + phrase + "\r\n";
+  header += "Server: " + SERVER_NAME + " \r\n";
+  header += "Content-Length: " + to_string(body.size()) + "\r\n";
   for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
-    h += it->first + ": " + it->second + "\r\n";
-  h += "\r\n";
-  strcpy(header_buffer, h.c_str());
-  size_t i;
-  int hbsize = strlen(header_buffer);
-  for (i = 0; i < body.size(); i++) {
-    header_buffer[hbsize + i] = body[i];
-  }
-  size = i + hbsize;
-  return header_buffer;
+    header += it->first + ": " + it->second + "\r\n";
+  header += "\r\n";
+  size = header.size() + body.size();
+  return header + body;
 }
 
 void Response::log() {
