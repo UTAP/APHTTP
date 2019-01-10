@@ -44,7 +44,7 @@ string Response::print(int &size) {
   return header + body;
 }
 
-void Response::log() {
+void Response::log(bool showBody) {
   const string NC = "\033[0;39m";
   const string K = "\033[1m";
   const string H = "\033[34;1m";
@@ -58,7 +58,8 @@ void Response::log() {
   for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
     log += "  " + urlDecode(it->first) + ": " + urlDecode(it->second) +
            string("\n");
-  log += K + string("Body:\n") + NC + body + string("\n");
+  if (showBody)
+    log += K + string("Body:\n") + NC + body + string("\n");
   log += H + string("------------------------") + NC + string("\n");
   cerr << log << endl;
 }

@@ -10,7 +10,7 @@ class Response {
 public:
   Response(int code = 200);
   std::string print(int &);
-  void log();
+  void log(bool showBody = false);
   void setHeader(std::string name, std::string value);
   void setBody(std::string _body);
   void setStatus(int code, std::string phrase);

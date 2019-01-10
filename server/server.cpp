@@ -231,6 +231,7 @@ void Server::run() {
     }
     delete req;
     int si;
+    res->log();
     string res_data = res->print(si);
     delete res;
     int wr = write(newsc, res_data.c_str(), si);
