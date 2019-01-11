@@ -61,7 +61,7 @@ void split(string str, string separator, int max, vector<string> &results) {
     results.push_back(str);
 }
 
-Request *parseRawReq(char *headersRaw) {
+Request *parseRawReq(char *headersRaw, size_t length) {
   Request *req;
   string boundary;
   string lastFieldKey;
@@ -71,6 +71,10 @@ Request *parseRawReq(char *headersRaw) {
     enum State { REQ, HEADER, BODY, BODY_HEADER, BODY_BODY };
     State state = REQ;
     vector<string> headers = split(string(headersRaw), "\r\n", false);
+    for (size_t i = 0; i < length; i++) {
+      if (!headersRaw[i])
+        throw Server::Exception("Unsupported binary data in request.");
+    }
     size_t realBodySize =
         string(headersRaw).size() -
         split(string(headersRaw), "\r\n\r\n", false)[0].size() -
@@ -253,7 +257,7 @@ void Server::run() {
         if (recv_len > 0) {
           recv_total_len += recv_len;
           data[recv_total_len >= 0 ? recv_total_len : 0] = 0;
-          req = parseRawReq(data);
+          req = parseRawReq(data, recv_total_len);
         } else
           break;
       }
