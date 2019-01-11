@@ -5,10 +5,6 @@ AP HTTP
 
 **AP HTTP::_server_** is a simple web application server-side framework for C++ based on simplified versions of [W++](http://konteck.github.io/wpp/), [HappyHTTP](http://scumways.com/happyhttp/happyhttp.html), and [cpp-netlib](http://cpp-netlib.org/).
 
-## Known Issues
-
-Please use _Firefox_ for submitting _multipart_ forms. Other browsers may encounter problem.
-
 ## Quick How-to & Examples
 
 ### Creating a New Server

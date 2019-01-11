@@ -11,9 +11,9 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <unistd.h>
 
 using namespace std;
@@ -45,6 +45,10 @@ Request *parseRawReq(char *headersRaw) {
     enum State { REQ, HEADER, BODY, BODY_HEADER, BODY_BODY };
     State state = REQ;
     vector<string> headers = split(string(headersRaw), "\r\n", false);
+    size_t realBodySize =
+        string(headersRaw).size() -
+        split(string(headersRaw), "\r\n\r\n", false)[0].size() -
+        string("\r\n\r\n").size();
     for (size_t headerIndex = 0; headerIndex < headers.size(); headerIndex++) {
       string line = headers[headerIndex];
       switch (state) {
@@ -86,6 +90,9 @@ Request *parseRawReq(char *headersRaw) {
         if (R.size() != 2)
           throw Server::Exception("Invalid header");
         req->setHeader(R[0], R[1], false);
+        if (toLowerCase(R[0]) == toLowerCase("Content-Length"))
+          if (realBodySize != atol(R[1].c_str()))
+            return NULL;
       } break;
       case BODY: {
         if (req->getHeader("Content-Type") == "") {
@@ -222,13 +229,22 @@ void Server::run() {
       throw Exception("Error on accept: " + string(strerror(errno)));
 
     char data[BUFSIZE + 1];
-    long ret = recv(newsc, data, BUFSIZE, 0);
-    if (!ret) {
+    size_t recv_len, recv_total_len = 0;
+    Request *req = NULL;
+    while (!req) {
+      recv_len =
+          recv(newsc, data + recv_total_len, BUFSIZE - recv_total_len, 0);
+      if (recv_len > 0) {
+        recv_total_len += recv_len;
+        data[recv_total_len >= 0 ? recv_total_len : 0] = 0;
+        req = parseRawReq(data);
+      } else
+        break;
+    }
+    if (!recv_total_len) {
       ::close(newsc);
       continue;
     }
-    data[ret >= 0 ? ret : 0] = 0;
-    Request *req = parseRawReq(data);
     req->log();
     Response *res = new Response();
     size_t i = 0;
