@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 using namespace std;
@@ -220,7 +222,7 @@ void Server::run() {
       throw Exception("Error on accept: " + string(strerror(errno)));
 
     char data[BUFSIZE + 1];
-    long ret = read(newsc, data, BUFSIZE);
+    long ret = recv(newsc, data, BUFSIZE, 0);
     if (!ret) {
       ::close(newsc);
       continue;
@@ -244,9 +246,9 @@ void Server::run() {
     res->log();
     string res_data = res->print(si);
     delete res;
-    int wr = write(newsc, res_data.c_str(), si);
+    int wr = send(newsc, res_data.c_str(), si, 0);
     if (wr != si)
-      throw Exception("Write error: " + string(strerror(errno)));
+      throw Exception("Send error: " + string(strerror(errno)));
     ::close(newsc);
   }
 }
