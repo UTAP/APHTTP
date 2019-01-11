@@ -58,7 +58,6 @@ private:
   int sc;
   int port;
   std::vector<Route *> routes;
-  std::string notFoundErrPage;
   RequestHandler *notFoundHandler;
 };
 #endif

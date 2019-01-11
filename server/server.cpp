@@ -18,6 +18,32 @@
 
 using namespace std;
 
+class NotFoundHandler : public RequestHandler {
+  string notFoundErrPage;
+
+public:
+  NotFoundHandler(string notFoundErrPage = "")
+      : notFoundErrPage(notFoundErrPage) {}
+  Response *callback(Request *req) {
+    Response *res = new Response(404);
+    if (!notFoundErrPage.empty()) {
+      res->setHeader("Content-Type", "text/" + getExtension(notFoundErrPage));
+      res->setBody(readFile(notFoundErrPage.c_str()));
+    }
+    return res;
+  }
+};
+
+class ServerErrorHandler {
+public:
+  static Response *callback(string msg) {
+    Response *res = new Response(500);
+    res->setHeader("Content-Type", "application/json");
+    res->setBody("{ \"code\": \"500\", \"message\": \"" + msg + "\" }\n");
+    return res;
+  }
+};
+
 void split(string str, string separator, int max, vector<string> &results) {
   int i = 0;
   size_t found = str.find_first_of(separator);
@@ -174,7 +200,9 @@ Request *parseRawReq(char *headersRaw) {
   return req;
 }
 
-Server::Server(int _port) : port(_port), notFoundHandler(NULL) {
+Server::Server(int _port) : port(_port) {
+  notFoundHandler = new NotFoundHandler();
+
   sc = socket(AF_INET, SOCK_STREAM, 0);
   int sc_option = 1;
   setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, &sc_option, sizeof(sc_option));
@@ -202,19 +230,6 @@ void Server::post(string path, RequestHandler *handler) {
   routes.push_back(route);
 }
 
-class NotFoundHandler : public RequestHandler {
-  string notFoundErrPage;
-
-public:
-  NotFoundHandler(string notFoundErrPage) : notFoundErrPage(notFoundErrPage) {}
-  Response *callback(Request *req) {
-    Response *res = new Response(404);
-    res->setHeader("Content-Type", "text/" + getExtension(notFoundErrPage));
-    res->setBody(readFile(notFoundErrPage.c_str()));
-    return res;
-  }
-};
-
 void Server::run() {
   ::listen(sc, 10);
 
@@ -227,37 +242,42 @@ void Server::run() {
     newsc = ::accept(sc, (struct sockaddr *)&cli_addr, &clilen);
     if (newsc < 0)
       throw Exception("Error on accept: " + string(strerror(errno)));
-
-    char data[BUFSIZE + 1];
-    size_t recv_len, recv_total_len = 0;
-    Request *req = NULL;
-    while (!req) {
-      recv_len =
-          recv(newsc, data + recv_total_len, BUFSIZE - recv_total_len, 0);
-      if (recv_len > 0) {
-        recv_total_len += recv_len;
-        data[recv_total_len >= 0 ? recv_total_len : 0] = 0;
-        req = parseRawReq(data);
-      } else
-        break;
-    }
-    if (!recv_total_len) {
-      ::close(newsc);
-      continue;
-    }
-    req->log();
-    Response *res = new Response();
-    size_t i = 0;
-    for (; i < routes.size(); i++) {
-      if (routes[i]->isMatch(req->getMethod(), req->getPath())) {
-        res = routes[i]->handle(req);
-        break;
+    Response *res = NULL;
+    try {
+      char data[BUFSIZE + 1];
+      size_t recv_len, recv_total_len = 0;
+      Request *req = NULL;
+      while (!req) {
+        recv_len =
+            recv(newsc, data + recv_total_len, BUFSIZE - recv_total_len, 0);
+        if (recv_len > 0) {
+          recv_total_len += recv_len;
+          data[recv_total_len >= 0 ? recv_total_len : 0] = 0;
+          req = parseRawReq(data);
+        } else
+          break;
       }
+      if (!recv_total_len) {
+        ::close(newsc);
+        continue;
+      }
+      req->log();
+      res = new Response();
+      size_t i = 0;
+      for (; i < routes.size(); i++) {
+        if (routes[i]->isMatch(req->getMethod(), req->getPath())) {
+          res = routes[i]->handle(req);
+          break;
+        }
+      }
+      if (i == routes.size() && notFoundHandler) {
+        res = notFoundHandler->callback(req);
+      }
+      delete req;
+    } catch (Exception exc) {
+      delete res;
+      res = ServerErrorHandler::callback(exc.getMessage());
     }
-    if (i == routes.size() && notFoundHandler) {
-      res = notFoundHandler->callback(req);
-    }
-    delete req;
     int si;
     res->log();
     string res_data = res->print(si);
