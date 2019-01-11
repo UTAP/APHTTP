@@ -38,6 +38,7 @@ Request *parseRawReq(char *headersRaw) {
   string boundary;
   string lastFieldKey;
   string lastFieldValue;
+  bool shouldBeEmpty;
   try {
     enum State { REQ, HEADER, BODY, BODY_HEADER, BODY_BODY };
     State state = REQ;
@@ -107,7 +108,8 @@ Request *parseRawReq(char *headersRaw) {
             state = BODY_HEADER;
           }
         } else {
-          throw Server::Exception("Unsupported body type");
+          throw Server::Exception("Unsupported body type: " +
+                                  req->getHeader("Content-Type"));
         }
       } break;
       case BODY_HEADER: {
@@ -131,9 +133,11 @@ Request *parseRawReq(char *headersRaw) {
               throw Server::Exception("Invalid body attribute");
           }
         } else if (toLowerCase(R[0]) == toLowerCase("Content-Type")) {
-          if (toLowerCase(R[1].substr(0, R[1].find("/"))) !=
-              toLowerCase("text"))
-            throw Server::Exception("Unsupported file type.");
+          if (toLowerCase(R[1]) == toLowerCase("application/octet-stream"))
+            shouldBeEmpty = true;
+          else if (toLowerCase(R[1].substr(0, R[1].find("/"))) !=
+                   toLowerCase("text"))
+            throw Server::Exception("Unsupported file type: " + R[1]);
         }
       } break;
       case BODY_BODY: {
@@ -144,11 +148,17 @@ Request *parseRawReq(char *headersRaw) {
           lastFieldKey = "";
           lastFieldValue = "";
           state = BODY_HEADER;
-        } else
+          shouldBeEmpty = false;
+        } else if (shouldBeEmpty && !line.empty())
+          throw Server::Exception("Unsupported file type: " +
+                                  string("application/octet-stream"));
+        else
           lastFieldValue += "\r\n" + line;
       } break;
       }
     }
+  } catch (Server::Exception) {
+    throw;
   } catch (...) {
     throw Server::Exception("Error on parsing request");
   }

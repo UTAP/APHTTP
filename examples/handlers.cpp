@@ -36,7 +36,7 @@ Response *LoginHandler::callback(Request *req) {
 Response *UploadHandler::callback(Request *req) {
   string name = req->getBodyParam("file_name");
   string file = req->getBodyParam("file");
-  cout << name << ":\n" << file << endl;
+  cout << name << " (" << file.size() << "B):\n" << file << endl;
   Response *res = Response::redirect("/");
   return res;
 }
