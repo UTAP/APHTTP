@@ -155,7 +155,21 @@ Request *parseRawReq(char *headersRaw) {
   return req;
 }
 
-Server::Server(int _port) : port(_port), notFoundHandler(NULL) {}
+Server::Server(int _port) : port(_port), notFoundHandler(NULL) {
+  sc = socket(AF_INET, SOCK_STREAM, 0);
+  int sc_option = 1;
+  setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, &sc_option, sizeof(sc_option));
+  if (sc < 0)
+    throw Exception("Error on opening socket: " + string(strerror(errno)));
+  struct sockaddr_in serv_addr;
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_addr.s_addr = INADDR_ANY;
+  serv_addr.sin_port = htons(port);
+
+  if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
+    throw Exception("Error on binding: " + string(strerror(errno)));
+  }
+}
 
 void Server::get(string path, RequestHandler *handler) {
   Route *route = new Route(GET, path);
@@ -183,20 +197,6 @@ public:
 };
 
 void Server::run() {
-  sc = socket(AF_INET, SOCK_STREAM, 0);
-  int sc_option = 1;
-  setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, &sc_option, sizeof(sc_option));
-  if (sc < 0)
-    throw Exception("Error on opening socket: " + string(strerror(errno)));
-  struct sockaddr_in serv_addr;
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = INADDR_ANY;
-  serv_addr.sin_port = htons(port);
-
-  if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
-    throw Exception("Error on binding: " + string(strerror(errno)));
-  }
-
   ::listen(sc, 10);
 
   struct sockaddr_in cli_addr;
