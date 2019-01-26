@@ -90,7 +90,7 @@ Request *parseRawReq(char *headersRaw, size_t length) {
         req = new Request(R[0]);
         req->setPath(R[1]);
         size_t pos = req->getPath().find('?');
-        if (pos != string::npos) {
+        if (pos != string::npos && pos != req->getPath().size() - 1) {
           vector<string> Q1 = split(req->getPath().substr(pos + 1), "&", false);
           for (vector<string>::size_type q = 0; q < Q1.size(); q++) {
             vector<string> Q2 = split(Q1[q], "=", false);
@@ -99,8 +99,8 @@ Request *parseRawReq(char *headersRaw, size_t length) {
             else
               throw Server::Exception("Invalid query");
           }
-          req->setPath(req->getPath().substr(0, pos));
         }
+        req->setPath(req->getPath().substr(0, pos));
         state = HEADER;
       } break;
       case HEADER: {
