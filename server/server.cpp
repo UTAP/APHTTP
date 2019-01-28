@@ -144,6 +144,7 @@ Request *parseRawReq(char *headersRaw, size_t length) {
           if (line == "--" + boundary || line == "--" + boundary + "--") {
             lastFieldKey = "";
             lastFieldValue = "";
+            shouldBeEmpty = false;
             state = BODY_HEADER;
           }
         } else {
