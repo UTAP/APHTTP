@@ -121,7 +121,7 @@ Request *parseRawReq(char *headersRaw, size_t length) {
           throw Server::Exception("Invalid header");
         req->setHeader(R[0], R[1], false);
         if (toLowerCase(R[0]) == toLowerCase("Content-Length"))
-          if (realBodySize != atol(R[1].c_str()))
+          if (realBodySize != (size_t)atol(R[1].c_str()))
             return NULL;
       } break;
       case BODY: {
@@ -297,7 +297,7 @@ Server::~Server() {
   if (sc >= 0)
     ::close(sc);
   delete notFoundHandler;
-  for (int i = 0; i < routes.size(); ++i)
+  for (size_t i = 0; i < routes.size(); ++i)
     delete routes[i];
 }
 
