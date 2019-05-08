@@ -169,3 +169,10 @@ void replaceAll(std::string &str, const std::string &from,
                               // 'x' with 'yx'
   }
 }
+
+int findSubStrPosition(std::string &str, std::string const &subStr, int const &pos){
+  size_t found = str.find(subStr, pos); 
+  if (found == string::npos) 
+      return -1;
+  return found;
+}

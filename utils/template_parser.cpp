@@ -8,20 +8,42 @@ TemplateParser::TemplateParser(string _filePath){
 
 string TemplateParser::getParsedHtml(){
     string unparsedTemplate = readFile(filePath);
-    return parseTemplate(unparsedTemplate);
+    parseTemplate(unparsedTemplate);
+    return code;
 }
 
-string TemplateParser::parseTemplate(string unparsedTemplate){
+void TemplateParser::parseTemplate(string unparsedTemplate){
     int parsePointer = 0;
     while(parsePointer < unparsedTemplate.size()){
-        int startCodeBlockPos = findStartCodeBlock(parsePointer, unparsedTemplate);
-        int endCodeBlockPos = findEndCodeBlock(parsePointer, unparsedTemplate);
+        int begin = findBeginOfCodeBlock(parsePointer, unparsedTemplate);
+        int end = findEndOfCodeBlock(parsePointer, unparsedTemplate);
+        if(begin < 0)
+            break;
+        appendHTMLToCode(parsePointer, begin, unparsedTemplate);
+        appendCodeBlockToCode(begin, end, unparsedTemplate);
+        parsePointer = end + endCodeBlockTag.size();
     }
+    appendHTMLToCode(parsePointer, unparsedTemplate.size(), unparsedTemplate);
 }
 
-int TemplateParser::findStartCodeBlock(int start, int unparsedTemplate){
-    return -1;
+int TemplateParser::findBeginOfCodeBlock(int startPosition, string &unparsedTemplate){
+    return findSubStrPosition(unparsedTemplate, beginCodeBlockTag, startPosition);
 }
-int TemplateParser::findEndCodeBlock(int start, int unparsedTemplate){
-    return -1;
+
+int TemplateParser::findEndOfCodeBlock(int startPosition, string &unparsedTemplate){
+    return findSubStrPosition(unparsedTemplate, endCodeBlockTag, startPosition);
+}
+
+void TemplateParser::appendHTMLToCode(int begin, int end, string const &unparsedTemplate){
+    code += "cout << ";
+    code += unparsedTemplate.substr(begin, end - begin);
+    code += "\n";
+}
+
+void TemplateParser::appendCodeBlockToCode(int begin, int end, string &unparsedTemplate){
+    if(end <= begin || begin < 0)
+        return;
+    //TODO: Add throwing exception for end not found.
+    code += unparsedTemplate.substr(begin + beginCodeBlockTag.size(),
+                                    end - begin - beginCodeBlockTag.size() - endCodeBlockTag.size());
 }
