@@ -3,6 +3,7 @@
 #include "../utils/include.hpp"
 #include "../utils/request.hpp"
 #include "../utils/response.hpp"
+#include "../utils/template_parser.hpp"
 #include "route.hpp"
 #include <exception>
 #include <string>
@@ -33,6 +34,13 @@ class ShowImage : public ShowFile {
 
 public:
   ShowImage(std::string _filePath);
+};
+
+class ShowTemplate : public RequestHandler {
+  std::string filePath;
+public:
+  ShowTemplate(std::string _filePath);  
+  Response *callback(Request *req);
 };
 
 class Server {
