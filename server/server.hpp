@@ -36,11 +36,12 @@ public:
   ShowImage(std::string _filePath);
 };
 
-class ShowTemplate : public RequestHandler {
+class TemplateHandler : public RequestHandler {
   std::string filePath;
 public:
-  ShowTemplate(std::string _filePath);  
+  TemplateHandler(std::string _filePath);
   Response *callback(Request *req);
+  virtual void handle(Request *req);  
 };
 
 class Server {
