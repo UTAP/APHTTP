@@ -29,5 +29,6 @@ void replaceAll(std::string &str, const std::string &from,
                 const std::string &to);
 
 int findSubStrPosition(std::string &str, std::string const &subStr, int const &pos);
+int writeToFile(std::string const &str, std::string const &filePath);
 
 #endif

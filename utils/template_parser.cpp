@@ -6,6 +6,7 @@ TemplateParser::TemplateParser(string _filePath, Request *_req){
     code = "";
     req = _req;
     variableCount = 0;
+    html = "";
 }
 
 string TemplateParser::getParsedHtml(){
@@ -13,7 +14,7 @@ string TemplateParser::getParsedHtml(){
     parseTemplate(unparsedTemplate);
     generateCode();
     runGeneratedCode();
-    return code;
+    return html;
 }
 
 void TemplateParser::parseTemplate(string unparsedTemplate){
@@ -61,14 +62,35 @@ void TemplateParser::generateCode(){
 }
 
 void TemplateParser::runGeneratedCode(){
+    if(!writeToFile(code, compiledFile))
+        return; //TODO: Throwing exception
+    
+    string cmd = cc + " "  + compiledFile
+                    + " " + requestClassPath + " " + utilitiesPath
+                    + " -o t.o && ./t.o > " + staticTemplate + " && rm t.o"
+                    + " && rm " + compiledFile;
+    
+    int ret = system(cmd.c_str());
+    if(WEXITSTATUS(ret) != EXIT_SUCCESS) {
+        cout << "compilation failed;" << endl;
+        exit(EXIT_FAILURE);
+    }
 
+    html = readFile(staticTemplate);
+
+    cmd = "rm " + staticTemplate;
+    ret = system(cmd.c_str());
+    if(WEXITSTATUS(ret) != EXIT_SUCCESS) {
+        cout << "delete failed;" << endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 void TemplateParser::addIncludesToCode(){
     string include = "#include <iostream>\n";
     include += "#include <string>\n";
-    include += "#include \"utils/request.hpp\"\n";
-    include += "#include \"utils/utilities.hpp\"\n";
+    include += "#include \"" + requestClassHeaderPath + "\"\n";
+    include += "#include \"" + utilitiesHeaderPath + "\"\n";
     include += "using namespace std;\n";
     code = include + "int main()\n{\n" + code + "\n";
 }

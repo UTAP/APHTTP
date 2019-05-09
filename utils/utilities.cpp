@@ -176,3 +176,13 @@ int findSubStrPosition(std::string &str, std::string const &subStr, int const &p
       return -1;
   return found;
 }
+
+int writeToFile(std::string const &str, std::string const &filePath){
+  ofstream  file;
+  file.open (filePath, fstream::out);
+  if(!file.is_open())
+    return -1;
+  file << str;
+  file.close();
+  return str.length();
+}
