@@ -18,8 +18,10 @@ int main(int argc, char **argv) {
     server.get("/rand", new RandomNumberHandler());
     server.get("/home.png", new ShowImage("static/home.png"));
     server.get("/", new ShowPage("static/home.html"));
+    server.get("/evens", new TemplateHandler("static/even_numbers.template"));
     server.run();
   } catch (Server::Exception e) {
     cerr << e.getMessage() << endl;
   }
+  
 }
