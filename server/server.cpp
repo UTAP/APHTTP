@@ -343,3 +343,5 @@ Response *TemplateHandler::callback(Request *req){
   res->setBody(parser.getParsedHtml());
   return res;
 }
+
+void TemplateHandler::handle(Request* req){}
