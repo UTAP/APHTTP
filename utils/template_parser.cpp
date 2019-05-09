@@ -51,8 +51,9 @@ void TemplateParser::appendCodeBlockToCode(int begin, int end, string &unparsedT
     if(end <= begin || begin < 0)
         return;
     //TODO: Add throwing exception for end not found.
+    int codeBlockSize = end - begin - beginCodeBlockTag.size();
     code += unparsedTemplate.substr(begin + beginCodeBlockTag.size(),
-                                    end - begin - beginCodeBlockTag.size() - endCodeBlockTag.size());
+                                    codeBlockSize);
 }
 
 void TemplateParser::generateCode(){
