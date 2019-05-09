@@ -8,7 +8,7 @@ all: $(BUILD_DIR) myserver.out
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(BUILD_DIR)/template_parser.o: utils/template_parser.cpp utils/template_parser.hpp
+$(BUILD_DIR)/template_parser.o: utils/template_parser.cpp utils/template_parser.hpp utils/request.cpp utils/request.hpp utils/utilities.hpp utils/utilities.cpp
 	$(CC) $(CF) -c utils/template_parser.cpp -o $(BUILD_DIR)/template_parser.o
 
 $(BUILD_DIR)/response.o: utils/response.cpp utils/response.hpp utils/include.hpp
