@@ -21,6 +21,10 @@ public:
   void setSessionId(std::string);
   std::string getQueryString();
   cimap getHeaders();
+  std::string getHeadersString();
+  void setHeaders(std::string);
+  void setQuery(std::string);
+  void setBody(std::string);
   void log();
 
 private:

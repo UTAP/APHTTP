@@ -107,3 +107,23 @@ string Request::getQueryString() {
   }
   return res;
 }
+
+string Request::getHeadersString() {
+  string headerString = "";
+  for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
+    headerString += it->first + "=" + it->second + "&";
+  return headerString;
+}
+
+void Request::setHeaders(string _headers){
+  headers = getCimapFromString(_headers);
+}
+
+void Request::setQuery(std::string _query){
+  _query = _query.substr(1);
+  query = getCimapFromString(_query);
+}
+
+void Request::setBody(std::string _body){
+  body = getCimapFromString(_body);
+}
