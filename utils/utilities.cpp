@@ -149,11 +149,11 @@ string getExtension(string filePath) {
   return filePath.substr(pos != string::npos ? pos + 1 : filePath.size());
 }
 
-vector<string> tokenize(const string &cnt, string delimiter) {
+vector<string> tokenize(const string &cnt, char delimiter) {
   vector<string> res;
   istringstream is(cnt);
   string part;
-  while (getline(is, part, ','))
+  while (getline(is, part, delimiter))
     res.push_back(part);
   return res;
 }
@@ -178,11 +178,29 @@ int findSubStrPosition(std::string &str, std::string const &subStr, int const &p
 }
 
 int writeToFile(std::string const &str, std::string const &filePath){
+  writeToFile(str.c_str(), filePath);
+}
+
+int writeToFile(char* object, std::string const &filePath){
   ofstream  file;
   file.open (filePath, fstream::out);
   if(!file.is_open())
     return -1;
-  file << str;
+  file.write(object, sizeof(object));
   file.close();
-  return str.length();
+  return sizeof(object);
+}
+
+cimap getCimapFromString(std::string str){
+  cimap m;
+  vector<string> tokenized = tokenize(str, '&');
+  for(auto token : tokenized){
+    vector<string> keyValue = tokenize(token, '=');
+    if(keyValue.size() != 2)
+      continue;
+    string key = keyValue[0];
+    string value = keyValue[1];
+    m[key] = value;
+  }
+  return m;
 }
