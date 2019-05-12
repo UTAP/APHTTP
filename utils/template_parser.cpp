@@ -1,23 +1,25 @@
 #include "template_parser.hpp"
 using namespace std;
 
-TemplateParser::TemplateParser(string _filePath, Request *_req){
+int TemplateParser::lastParserNum = 0;
+
+TemplateParser::TemplateParser(string _filePath){
     filePath = _filePath;
-    code = "";
-    req = _req;
     variableCount = 0;
-    html = "";
+    programName = to_string(TemplateParser::lastParserNum) + ".o";
+    parserNum = TemplateParser::lastParserNum++;
+    code = "";
+    parseTemplate();
+    makeExecutableTemplate();
 }
 
-string TemplateParser::getParsedHtml(){
+string TemplateParser::getHtml(Request *_req){
+    req = _req;
+    return runGeneratedCode();
+}
+
+void TemplateParser::parseTemplate(){
     string unparsedTemplate = readFile(filePath);
-    parseTemplate(unparsedTemplate);
-    generateCode();
-    runGeneratedCode();
-    return html;
-}
-
-void TemplateParser::parseTemplate(string unparsedTemplate){
     int parsePointer = 0;
     while(parsePointer < unparsedTemplate.size()){
         int begin = findBeginOfCodeBlock(parsePointer, unparsedTemplate);
@@ -40,51 +42,71 @@ int TemplateParser::findEndOfCodeBlock(int startPosition, string &unparsedTempla
 }
 
 void TemplateParser::appendHTMLToCode(int begin, int end, string const &unparsedTemplate){
-    code += "\nstring variable" + to_string(variableCount) + ";";
-    code += "\nvariable" + to_string(variableCount) + " = unparsedTemplate.substr(";
+    code += "\nstring __variable" + to_string(variableCount) + ";";
+    code += "\n__variable" + to_string(variableCount) + " = __unparsedTemplate__.substr(";
     code += to_string(begin) + ", " + to_string(end - begin) + ");";
-    code += "\ncout << variable" + to_string(variableCount) + ";" ;
+    code += "\ncout << __variable" + to_string(variableCount) + ";" ;
     variableCount ++;
 }
 
 void TemplateParser::appendCodeBlockToCode(int begin, int end, string &unparsedTemplate){
     if(end <= begin || begin < 0)
-        return;
-    //TODO: Add throwing exception for end not found.
+        throw Server::Exception("Can not parse template " + filePath);
     int codeBlockSize = end - begin - beginCodeBlockTag.size();
     code += unparsedTemplate.substr(begin + beginCodeBlockTag.size(),
                                     codeBlockSize);
 }
 
+void TemplateParser::makeExecutableTemplate(){
+    generateCode();
+    compileCode();
+}
+
 void TemplateParser::generateCode(){
     addReadFromTemplateToCode();
+    addReqToCode();
     addIncludesToCode();
     addReturnToCode();
 }
 
-void TemplateParser::runGeneratedCode(){
-    if(!writeToFile(code, compiledFile))
-        return; //TODO: Throwing exception
+void TemplateParser::compileCode(){
+    if(!writeToFile(code, toCompileFile))
+        throw Server::Exception("Can not write generated template code.");
     
-    string cmd = cc + " "  + compiledFile
+    string cmd =  "mkdir -p " + outputFolder + " &&" 
+                    + cc + " "  + toCompileFile
                     + " " + requestClassPath + " " + utilitiesPath
-                    + " -o t.o && ./t.o > " + staticTemplate + " && rm t.o"
-                    + " && rm " + compiledFile;
+                    + " -o " + outputFolder + "/" + programName 
+                    + "&& rm " + toCompileFile;
     
     int ret = system(cmd.c_str());
     if(WEXITSTATUS(ret) != EXIT_SUCCESS) {
-        cout << "compilation failed;" << endl;
-        exit(EXIT_FAILURE);
+        string error = "Can not compile template " + filePath;
+        throw Server::Exception(error);
+    }
+}
+
+string TemplateParser::runGeneratedCode(){
+    Request::serializeToFile(req, ".template/req.txt");
+
+    string cmd = "./" + outputFolder + "/" + programName + " " 
+                + " > " + staticTemplate;
+    
+    int ret = system(cmd.c_str());
+    if(WEXITSTATUS(ret) != EXIT_SUCCESS) {
+        string error = "Error in running template  " + filePath;
+        throw Server::Exception(error);
     }
 
-    html = readFile(staticTemplate);
+    string html = readFile(staticTemplate);
 
     cmd = "rm " + staticTemplate;
     ret = system(cmd.c_str());
     if(WEXITSTATUS(ret) != EXIT_SUCCESS) {
-        cout << "delete failed;" << endl;
-        exit(EXIT_FAILURE);
+        string error = "Error in deleting static template  " + filePath;
+        throw Server::Exception(error);
     }
+    return html;
 }
 
 void TemplateParser::addIncludesToCode(){
@@ -93,13 +115,19 @@ void TemplateParser::addIncludesToCode(){
     include += "#include \"" + requestClassHeaderPath + "\"\n";
     include += "#include \"" + utilitiesHeaderPath + "\"\n";
     include += "using namespace std;\n";
-    code = include + "int main()\n{\n" + code + "\n";
+    code = include + "int main(int argc, char const *argv[])\n{\n" + code + "\n";
 }
 
 void TemplateParser::addReadFromTemplateToCode(){
-    code = "string unparsedTemplate = readFile(\"" + filePath + "\");\n" + code;
+    code = "string __unparsedTemplate__ = readFile(\"" + filePath + "\");\n" + code;
 }
 
 void TemplateParser::addReturnToCode(){
     code += "return 0;\n}\n";
+}
+
+void TemplateParser::addReqToCode(){
+    string reqCode = "Request *req = new Request();\n";
+    reqCode += "Request::deserializeFromFile(req, \".template/req.txt\");\n";
+    code = reqCode + code;
 }

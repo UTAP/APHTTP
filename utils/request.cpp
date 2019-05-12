@@ -143,8 +143,7 @@ void Request::serializeToFile(Request* req, string filePath){
   writeToFile(reqString, filePath);
 }
 
-void Request::
-(Request* req, string filePath){
+void Request::deserializeFromFile(Request* req, string filePath){
   vector<string> fields = tokenize(readFile(filePath), '\n');
   switch(fields.size()){
     case 5: 

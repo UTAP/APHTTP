@@ -177,18 +177,18 @@ int findSubStrPosition(std::string &str, std::string const &subStr, int const &p
   return found;
 }
 
-int writeToFile(std::string const &str, std::string const &filePath){
-  writeToFile(str.c_str(), filePath);
-}
-
-int writeToFile(char* object, std::string const &filePath){
+int writeObjectToFile(const char *object, int size, std::string const &filePath){
   ofstream  file;
   file.open (filePath, fstream::out);
   if(!file.is_open())
     return -1;
-  file.write(object, sizeof(object));
+  file.write(object, size);
   file.close();
   return sizeof(object);
+}
+
+int writeToFile(std::string const &str, std::string const &filePath){
+  return writeObjectToFile(str.c_str(), str.length(), filePath);
 }
 
 cimap getCimapFromString(std::string str){
