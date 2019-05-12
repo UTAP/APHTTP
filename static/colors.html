@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="/colors">
+        Choose color :
+        <span>
+            <input type="radio" name="color" value="red" checked> Red
+            <input type="radio" name="color" value="navy"> Navy
+            <input type="radio" name="color" value="green"> Green
+        </span>
+        <br>
+        <span>
+            Your name :
+            <input type="text" name="name" />
+        </span>
+        <input type="submit" />
+    </form>
+
+    <%
+        if(req->getQueryParam("color") == "red")
+        {
+    %>
+        <div style="color:red; height: 10px;" > 
+            <%
+                cout << req->getBodyParam("name");
+            %>
+        </div>
+    <%
+        }
+    %>
+    <%
+        if(req->getQueryParam("color") == "navy")
+        {
+    %>
+        <div style="color:navy; height: 10px;" >
+            <%
+                cout << req->getBodyParam("name");
+            %>
+        </div> 
+    <%
+        }
+    %>
+    <%
+        if(req->getQueryParam("color") == "green")
+        {
+    %>
+        <div style="color:green; height: 10px;" >
+            <%
+                cout << req->getBodyParam("name");
+            %>
+        </div>
+    <%
+        }
+    %>
+
+</body>
+
+</html>

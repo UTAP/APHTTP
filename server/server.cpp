@@ -333,14 +333,14 @@ RequestHandler::~RequestHandler() {}
 
 TemplateHandler::TemplateHandler(string _filePath){
   filePath = _filePath;
+  parser = new TemplateParser(filePath);
 }
 
 Response *TemplateHandler::callback(Request *req){
   this->handle(req);
   Response *res = new Response;
   res->setHeader("Content-Type", "text/html");
-  TemplateParser parser = TemplateParser(filePath, req);
-  res->setBody(parser.getParsedHtml());
+  res->setBody(parser->getHtml(req));
   return res;
 }
 

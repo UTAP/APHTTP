@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+class TemplateParser;
+
 class RequestHandler {
 public:
   virtual ~RequestHandler();
@@ -38,6 +40,8 @@ public:
 
 class TemplateHandler : public RequestHandler {
   std::string filePath;
+  TemplateParser *parser;
+
 public:
   TemplateHandler(std::string _filePath);
   Response *callback(Request *req);
