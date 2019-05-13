@@ -17,6 +17,8 @@ const std::string compileDirectory = "templateCompile";
 const std::string toCompileFile = "compiled.cpp";
 const std::string staticTemplate = "staticTemplate.html";
 const std::string outputFolder = ".template";
+const std::string reqFile = "req.txt";
+const std::string localTemplate(const int parserNum);
 
 class TemplateParser {
 private:
@@ -41,8 +43,10 @@ private:
   void addReqToCode();
   std::string runGeneratedCode();
   void makeExecutableTemplate();
+  void makeLocalTemplate();
   void compileCode();
   void deleteExecutable();
+  void deleteLocalTemplate();
   class TemplateUtils {
   public:
     static void runSystemCommand(std::string command, std::string errorMessage);

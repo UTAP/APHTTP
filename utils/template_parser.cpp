@@ -2,6 +2,9 @@
 using namespace std;
 
 int TemplateParser::lastParserNum = 0;
+const std::string localTemplate(const int parserNum) {
+  return "local" + std::to_string(parserNum) + ".html";
+}
 
 TemplateParser::TemplateParser(string _filePath) {
   filePath = _filePath;
@@ -64,7 +67,16 @@ void TemplateParser::appendCodeBlockToCode(int begin, int end,
 
 void TemplateParser::makeExecutableTemplate() {
   generateCode();
+  makeLocalTemplate();
   compileCode();
+}
+
+void TemplateParser::makeLocalTemplate() {
+  string templateContent = readFile(filePath);
+  if (!writeToFile(templateContent,
+                   outputFolder + "/" + localTemplate(parserNum)))
+    throw Server::Exception("Can not write template to local " + outputFolder +
+                            "folder");
 }
 
 void TemplateParser::generateCode() {
@@ -76,39 +88,29 @@ void TemplateParser::generateCode() {
 
 void TemplateParser::compileCode() {
   if (!writeToFile(code, toCompileFile))
-    throw Server::Exception("Can not write generated template code.");
+    throw Server::Exception("Can not write generated template code!");
 
   string cmd = "mkdir -p " + outputFolder + " &&" + cc + " " + toCompileFile +
                " " + requestClassPath + " " + utilitiesPath + " -o " +
                outputFolder + "/" + programName + "&& rm -f " + toCompileFile;
-
-  int ret = system(cmd.c_str());
-  if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
-    string error = "Can not compile template " + filePath;
-    throw Server::Exception(error);
-  }
+  string error = "Can not compile template " + filePath;
+  TemplateUtils::runSystemCommand(cmd, error);
 }
 
 string TemplateParser::runGeneratedCode() {
-  Request::serializeToFile(req, ".template/req.txt");
+  Request::serializeToFile(req, outputFolder + "/" + reqFile);
 
   string cmd =
       "./" + outputFolder + "/" + programName + " " + " > " + staticTemplate;
-
-  int ret = system(cmd.c_str());
-  if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
-    string error = "Error in running template  " + filePath;
-    throw Server::Exception(error);
-  }
+  string error = "Error in running template  " + filePath;
+  TemplateUtils::runSystemCommand(cmd, error);
 
   string html = readFile(staticTemplate);
 
   cmd = "rm -f " + staticTemplate;
-  ret = system(cmd.c_str());
-  if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
-    string error = "Error in deleting static template  " + filePath;
-    throw Server::Exception(error);
-  }
+  error = "Error in deleting static template for  " + filePath;
+  TemplateUtils::runSystemCommand(cmd, error);
+
   return html;
 }
 
@@ -122,23 +124,35 @@ void TemplateParser::addIncludesToCode() {
 }
 
 void TemplateParser::addReadFromTemplateToCode() {
-  code =
-      "string __unparsedTemplate__ = readFile(\"" + filePath + "\");\n" + code;
+  code = "string __unparsedTemplate__ = readFile(\"" + outputFolder + "/" +
+         localTemplate(parserNum) + "\");\n" + code;
 }
 
 void TemplateParser::addReturnToCode() { code += "return 0;\n}\n"; }
 
 void TemplateParser::addReqToCode() {
-  string reqCode = "Request *req = new Request();\n";
-  reqCode += "Request::deserializeFromFile(req, \".template/req.txt\");\n";
+  string reqCode = "Request *request = new Request();\n";
+  reqCode += "Request::deserializeFromFile(request, \"" + outputFolder + "/" +
+             reqFile + "\");\n";
   code = reqCode + code;
 }
 
-TemplateParser::~TemplateParser() { deleteExecutable(); }
+TemplateParser::~TemplateParser() {
+  deleteExecutable();
+  deleteLocalTemplate();
+}
 
 void TemplateParser::deleteExecutable() {
   string cmd = "rm -f " + outputFolder + "/" + programName;
-  string error = "Error in deleting executable file  " + programName;
+  string error = "Error in deleting executable file at  " + outputFolder + "/" +
+                 programName;
+  TemplateUtils::runSystemCommand(cmd, error);
+}
+
+void TemplateParser::deleteLocalTemplate() {
+  string cmd = "rm -f " + outputFolder + "/" + localTemplate(parserNum);
+  string error = "Error in deleting local template at  " + outputFolder + "/" +
+                 localTemplate(parserNum);
   TemplateUtils::runSystemCommand(cmd, error);
 }
 

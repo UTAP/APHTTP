@@ -25,38 +25,38 @@
     </form>
 
     <%
-        if(req->getQueryParam("color") == "red")
+        if(request->getQueryParam("color") == "red")
         {
     %>
-        <div style="color:red; height: 10px;" > 
-            <%
-                cout << req->getBodyParam("name");
+    <div style="color:red; height: 10px;">
+        <%
+                cout << request->getBodyParam("name");
             %>
-        </div>
+    </div>
     <%
         }
     %>
     <%
-        if(req->getQueryParam("color") == "navy")
+        if(request->getQueryParam("color") == "navy")
         {
     %>
-        <div style="color:navy; height: 10px;" >
-            <%
-                cout << req->getBodyParam("name");
+    <div style="color:navy; height: 10px;">
+        <%
+                cout << request->getBodyParam("name");
             %>
-        </div> 
+    </div>
     <%
         }
     %>
     <%
-        if(req->getQueryParam("color") == "green")
+        if(request->getQueryParam("color") == "green")
         {
     %>
-        <div style="color:green; height: 10px;" >
-            <%
-                cout << req->getBodyParam("name");
+    <div style="color:green; height: 10px;">
+        <%
+                cout << request->getBodyParam("name");
             %>
-        </div>
+    </div>
     <%
         }
     %>
