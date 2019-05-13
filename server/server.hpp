@@ -45,7 +45,7 @@ class TemplateHandler : public RequestHandler {
 public:
   TemplateHandler(std::string _filePath);
   Response *callback(Request *req);
-  virtual void handle(Request *req);  
+  virtual void handle(Request *req);
 };
 
 class Server {

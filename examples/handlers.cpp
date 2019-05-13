@@ -45,7 +45,7 @@ Response *UploadHandler::callback(Request *req) {
 
 ColorHandler::ColorHandler(string filePath) : TemplateHandler(filePath) {}
 
-void ColorHandler::handle(Request *req){
+void ColorHandler::handle(Request *req) {
   string newName = "I am " + req->getQueryParam("name");
   req->setBodyParam("name", newName);
 }

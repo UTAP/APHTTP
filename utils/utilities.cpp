@@ -170,33 +170,35 @@ void replaceAll(std::string &str, const std::string &from,
   }
 }
 
-int findSubStrPosition(std::string &str, std::string const &subStr, int const &pos){
-  size_t found = str.find(subStr, pos); 
-  if (found == string::npos) 
-      return -1;
+int findSubStrPosition(std::string &str, std::string const &subStr,
+                       int const &pos) {
+  size_t found = str.find(subStr, pos);
+  if (found == string::npos)
+    return -1;
   return found;
 }
 
-int writeObjectToFile(const char *object, int size, std::string const &filePath){
-  ofstream  file;
-  file.open (filePath, fstream::out);
-  if(!file.is_open())
+int writeObjectToFile(const char *object, int size,
+                      std::string const &filePath) {
+  ofstream file;
+  file.open(filePath, fstream::out);
+  if (!file.is_open())
     return -1;
   file.write(object, size);
   file.close();
   return sizeof(object);
 }
 
-int writeToFile(std::string const &str, std::string const &filePath){
+int writeToFile(std::string const &str, std::string const &filePath) {
   return writeObjectToFile(str.c_str(), str.length(), filePath);
 }
 
-cimap getCimapFromString(std::string str){
+cimap getCimapFromString(std::string str) {
   cimap m;
   vector<string> tokenized = tokenize(str, '&');
-  for(auto token : tokenized){
+  for (auto token : tokenized) {
     vector<string> keyValue = tokenize(token, '=');
-    if(keyValue.size() != 2)
+    if (keyValue.size() != 2)
       continue;
     string key = keyValue[0];
     string value = keyValue[1];

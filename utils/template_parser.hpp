@@ -1,12 +1,12 @@
 #ifndef __TEMPLATE_PARSER__
 #define __TEMPLATE_PARSER__
-#include <string>
-#include <iostream>
-#include "../server/server.hpp" // for Exception
-#include "../utils/utilities.hpp"
+#include "../server/server.hpp"
 #include "../utils/request.hpp"
+#include "../utils/utilities.hpp"
+#include <iostream>
+#include <string>
 
-const std::string beginCodeBlockTag =  "<%";
+const std::string beginCodeBlockTag = "<%";
 const std::string endCodeBlockTag = "%>";
 const std::string requestClassHeaderPath = "utils/request.hpp";
 const std::string utilitiesHeaderPath = "utils/utilities.hpp";
@@ -20,32 +20,32 @@ const std::string outputFolder = ".template";
 
 class TemplateParser {
 private:
-    static int lastParserNum;
-    int parserNum;
-    std::string filePath;
-    std::string code;
-    Request *req;
-    int variableCount;
-    std::string html;
-    std::string programName;
+  static int lastParserNum;
+  int parserNum;
+  std::string filePath;
+  std::string code;
+  Request *req;
+  int variableCount;
+  std::string html;
+  std::string programName;
 
-    void parseTemplate();
-    int findBeginOfCodeBlock(int startPosition, std::string &unparsedTemplate);
-    int findEndOfCodeBlock(int startPosition, std::string &unparsedTemplate);
-    void appendHTMLToCode(int begin, int end, std::string const &html);
-    void appendCodeBlockToCode(int begin, int end, std::string &unparsedTemplate);
-    void generateCode();
-    void addIncludesToCode();
-    void addReadFromTemplateToCode();
-    void addReturnToCode();
-    void addReqToCode();
-    std::string runGeneratedCode();
-    void makeExecutableTemplate();
-    void compileCode();
+  void parseTemplate();
+  int findBeginOfCodeBlock(int startPosition, std::string &unparsedTemplate);
+  int findEndOfCodeBlock(int startPosition, std::string &unparsedTemplate);
+  void appendHTMLToCode(int begin, int end, std::string const &html);
+  void appendCodeBlockToCode(int begin, int end, std::string &unparsedTemplate);
+  void generateCode();
+  void addIncludesToCode();
+  void addReadFromTemplateToCode();
+  void addReturnToCode();
+  void addReqToCode();
+  std::string runGeneratedCode();
+  void makeExecutableTemplate();
+  void compileCode();
 
 public:
-    TemplateParser(std::string _filePath);
-    std::string getHtml(Request *_req);
+  TemplateParser(std::string _filePath);
+  std::string getHtml(Request *_req);
 };
 
 #endif

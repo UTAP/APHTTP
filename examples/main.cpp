@@ -23,5 +23,4 @@ int main(int argc, char **argv) {
   } catch (Server::Exception e) {
     cerr << e.getMessage() << endl;
   }
-  
 }

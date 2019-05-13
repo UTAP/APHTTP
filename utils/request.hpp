@@ -3,7 +3,6 @@
 #include "../utils/include.hpp"
 #include "../utils/utilities.hpp"
 #include <string>
-#include <fstream> // for write to file and read from it
 
 class Request {
 public:
@@ -28,8 +27,8 @@ public:
   void setQuery(std::string);
   void setBody(std::string);
   void log();
-  static void serializeToFile(Request* req, std::string filePath);
-  static void deserializeFromFile(Request* req, std::string filePath);
+  static void serializeToFile(Request *req, std::string filePath);
+  static void deserializeFromFile(Request *req, std::string filePath);
 
 private:
   std::string path;
