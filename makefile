@@ -2,6 +2,7 @@ CC=g++
 STD=-std=c++11 -Wall -pedantic
 CF=$(STD)
 BUILD_DIR=build
+TEMPLATE_DIR=.template
 
 all: $(BUILD_DIR) myserver.out
 
@@ -40,4 +41,4 @@ myserver.out: $(BUILD_DIR)/my_server.o $(BUILD_DIR)/main.o $(BUILD_DIR)/handlers
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR) *.o *.out &> /dev/null
+	rm -rf $(BUILD_DIR) $(TEMPLATE_DIR) *.o *.out &> /dev/null

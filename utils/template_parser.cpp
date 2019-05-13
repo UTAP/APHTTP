@@ -80,7 +80,7 @@ void TemplateParser::compileCode() {
 
   string cmd = "mkdir -p " + outputFolder + " &&" + cc + " " + toCompileFile +
                " " + requestClassPath + " " + utilitiesPath + " -o " +
-               outputFolder + "/" + programName + "&& rm " + toCompileFile;
+               outputFolder + "/" + programName + "&& rm -f " + toCompileFile;
 
   int ret = system(cmd.c_str());
   if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
@@ -103,7 +103,7 @@ string TemplateParser::runGeneratedCode() {
 
   string html = readFile(staticTemplate);
 
-  cmd = "rm " + staticTemplate;
+  cmd = "rm -f " + staticTemplate;
   ret = system(cmd.c_str());
   if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
     string error = "Error in deleting static template  " + filePath;
@@ -132,4 +132,20 @@ void TemplateParser::addReqToCode() {
   string reqCode = "Request *req = new Request();\n";
   reqCode += "Request::deserializeFromFile(req, \".template/req.txt\");\n";
   code = reqCode + code;
+}
+
+TemplateParser::~TemplateParser() { deleteExecutable(); }
+
+void TemplateParser::deleteExecutable() {
+  string cmd = "rm -f " + outputFolder + "/" + programName;
+  string error = "Error in deleting executable file  " + programName;
+  TemplateUtils::runSystemCommand(cmd, error);
+}
+
+void TemplateParser::TemplateUtils::runSystemCommand(string command,
+                                                     string error) {
+  int ret = system(command.c_str());
+  if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
+    throw Server::Exception(error);
+  }
 }

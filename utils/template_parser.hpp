@@ -42,9 +42,15 @@ private:
   std::string runGeneratedCode();
   void makeExecutableTemplate();
   void compileCode();
+  void deleteExecutable();
+  class TemplateUtils {
+  public:
+    static void runSystemCommand(std::string command, std::string errorMessage);
+  };
 
 public:
   TemplateParser(std::string _filePath);
+  ~TemplateParser();
   std::string getHtml(Request *_req);
 };
 
