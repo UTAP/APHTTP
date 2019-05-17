@@ -67,14 +67,14 @@ void TemplateParser::appendCodeBlockToCode(int begin, int end,
 
 void TemplateParser::makeExecutableTemplate() {
   generateCode();
-  makeLocalTemplate();
   compileCode();
+  makeLocalTemplate();
 }
 
 void TemplateParser::makeLocalTemplate() {
   string templateContent = readFile(filePath);
-  if (!writeToFile(templateContent,
-                   outputFolder + "/" + localTemplate(parserNum)))
+  if (writeToFile(templateContent,
+                   outputFolder + "/" + localTemplate(parserNum)) < 0)
     throw Server::Exception("Can not write template to local " + outputFolder +
                             "folder");
 }
@@ -87,7 +87,7 @@ void TemplateParser::generateCode() {
 }
 
 void TemplateParser::compileCode() {
-  if (!writeToFile(code, toCompileFile))
+  if (writeToFile(code, toCompileFile) < 0)
     throw Server::Exception("Can not write generated template code!");
 
   string cmd = "mkdir -p " + outputFolder + " &&" + cc + " " + toCompileFile +
