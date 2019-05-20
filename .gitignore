@@ -74,5 +74,10 @@ build
 # Editors
 .vscode
 
-# Template cache of APHTTP
+###APHTTP###
+
+# Compiled Template
+compiled.cpp
+
+# Template cache
 .template

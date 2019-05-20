@@ -133,6 +133,8 @@ void TemplateParser::addReturnToCode() { code += "return 0;\n}\n"; }
 
 void TemplateParser::addContextMapToCode() {
   string mapCode = "std::map<std::string, std::string> context;\n";
+  // `mapFile` should be changed if we want to handle requests
+  //  in a multi-thread non-blocking way
   mapCode +=
       "readMapFromFile(\"" + outputFolder + "/" + mapFile + "\", &context);\n";
   code = mapCode + code;
