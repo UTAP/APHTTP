@@ -92,8 +92,8 @@ void TemplateParser::compileCode() {
     throw Server::Exception("Can not write generated template code!");
 
   string cmd = "mkdir -p " + outputFolder + " &&" + cc + " " + toCompileFile +
-               " " + utilitiesPath + " -o " + outputFolder + "/" + programName;
-  //  "&& rm -f " + toCompileFile;
+               " " + utilitiesPath + " -o " + outputFolder + "/" + programName +
+               "&& rm -f " + toCompileFile;
   string error = "Can not compile template " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 }
@@ -133,7 +133,8 @@ void TemplateParser::addReturnToCode() { code += "return 0;\n}\n"; }
 
 void TemplateParser::addContextMapToCode() {
   string mapCode = "std::map<std::string, std::string> context;\n";
-  mapCode += "readMapFromFile(\"" + outputFolder + "/" + mapFile + "\", &context);\n";
+  mapCode +=
+      "readMapFromFile(\"" + outputFolder + "/" + mapFile + "\", &context);\n";
   code = mapCode + code;
 }
 

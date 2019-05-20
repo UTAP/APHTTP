@@ -24,7 +24,7 @@ public:
 class ColorHandler : public TemplateHandler {
 public:
   ColorHandler(std::string filePath);
-  void handle(Request *);
+  std::map<std::string, std::string> handle(Request *req);
 };
 
 #endif

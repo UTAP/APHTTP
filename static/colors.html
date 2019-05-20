@@ -25,36 +25,36 @@
     </form>
 
     <%
-        if(request->getQueryParam("color") == "red")
+        if(context["color"] == "red")
         {
     %>
     <div style="color:red; height: 10px;">
         <%
-                cout << request->getBodyParam("name");
+                cout << context["name"];
             %>
     </div>
     <%
         }
     %>
     <%
-        if(request->getQueryParam("color") == "navy")
+        if(context["color"] == "navy")
         {
     %>
     <div style="color:navy; height: 10px;">
         <%
-                cout << request->getBodyParam("name");
+                cout << context["name"];
             %>
     </div>
     <%
         }
     %>
     <%
-        if(request->getQueryParam("color") == "green")
+        if(context["color"] == "green")
         {
     %>
     <div style="color:green; height: 10px;">
         <%
-                cout << request->getBodyParam("name");
+                cout << context["name"];
             %>
     </div>
     <%
