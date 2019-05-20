@@ -337,11 +337,15 @@ TemplateHandler::TemplateHandler(string _filePath) {
 }
 
 Response *TemplateHandler::callback(Request *req) {
-  this->handle(req);
+  map<string, string> context;
+  context = this->handle(req);
   Response *res = new Response;
   res->setHeader("Content-Type", "text/html");
-  res->setBody(parser->getHtml(req));
+  res->setBody(parser->getHtml(context));
   return res;
 }
 
-void TemplateHandler::handle(Request *req) {}
+map<string, string> TemplateHandler::handle(Request *req) {
+  map<string, string> context;
+  return context;
+}
