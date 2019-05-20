@@ -69,3 +69,15 @@ Temporary Items
 
 ###Other###
 build
+
+
+# Editors
+.vscode
+
+###APHTTP###
+
+# Compiled Template
+compiled.cpp
+
+# Template cache
+.template

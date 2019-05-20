@@ -21,4 +21,10 @@ public:
   Response *callback(Request *);
 };
 
+class ColorHandler : public TemplateHandler {
+public:
+  ColorHandler(std::string filePath);
+  std::map<std::string, std::string> handle(Request *req);
+};
+
 #endif

@@ -10,6 +10,7 @@ public:
   std::string getPath();
   void setPath(std::string);
   Method getMethod();
+  void setMethod(Method);
   std::string getQueryParam(std::string key);
   void setQueryParam(std::string key, std::string value, bool encode = true);
   std::string getBodyParam(std::string key);
@@ -21,7 +22,13 @@ public:
   void setSessionId(std::string);
   std::string getQueryString();
   cimap getHeaders();
+  std::string getHeadersString();
+  void setHeaders(std::string);
+  void setQuery(std::string);
+  void setBody(std::string);
   void log();
+  static void serializeToFile(Request *req, std::string filePath);
+  static void deserializeFromFile(Request *req, std::string filePath);
 
 private:
   std::string path;

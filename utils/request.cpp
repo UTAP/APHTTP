@@ -1,5 +1,6 @@
 #include "request.hpp"
 #include "../utils/utilities.hpp"
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -24,6 +25,8 @@ string Request::getPath() { return path; }
 void Request::setPath(string _path) { path = _path; }
 
 Method Request::getMethod() { return method; }
+
+void Request::setMethod(Method _method) { method = _method; }
 
 void Request::setQueryParam(string key, string value, bool encode) {
   query[key] = encode ? urlEncode(value) : value;
@@ -106,4 +109,51 @@ string Request::getQueryString() {
     res += "&";
   }
   return res;
+}
+
+string Request::getHeadersString() {
+  string headerString = "";
+  for (auto it = headers.begin(); !headers.empty() && it != headers.end(); it++)
+    headerString += it->first + "=" + it->second + "&";
+  return headerString;
+}
+
+void Request::setHeaders(string _headers) {
+  headers = getCimapFromString(_headers);
+}
+
+void Request::setQuery(std::string _query) {
+  _query = _query.substr(1);
+  query = getCimapFromString(_query);
+}
+
+void Request::setBody(std::string _body) { body = getCimapFromString(_body); }
+
+void Request::serializeToFile(Request *req, string filePath) {
+  string reqString = to_string(req->getMethod());
+  reqString += "\n";
+  reqString += req->getPath();
+  reqString += "\n";
+  reqString += req->getHeadersString();
+  reqString += "\n";
+  reqString += req->getBody();
+  reqString += "\n";
+  reqString += req->getQueryString();
+  writeToFile(reqString, filePath);
+}
+
+void Request::deserializeFromFile(Request *req, string filePath) {
+  vector<string> fields = tokenize(readFile(filePath), '\n');
+  switch (fields.size()) {
+  case 5:
+    req->setQuery(fields[4]);
+  case 4:
+    req->setBody(fields[3]);
+  case 3:
+    req->setHeaders(fields[2]);
+  case 2:
+    req->setPath(fields[1]);
+  case 1:
+    req->setMethod(stoi(fields[0]) == GET ? GET : POST);
+  }
 }

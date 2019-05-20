@@ -42,3 +42,13 @@ Response *UploadHandler::callback(Request *req) {
   Response *res = Response::redirect("/");
   return res;
 }
+
+ColorHandler::ColorHandler(string filePath) : TemplateHandler(filePath) {}
+
+map<string, string> ColorHandler::handle(Request *req) {
+  map<string, string> context;
+  string newName = "I am " + req->getQueryParam("name");
+  context["name"] = newName;
+  context["color"] = req->getQueryParam("color");
+  return context;
+}

@@ -3,10 +3,13 @@
 #include "../utils/include.hpp"
 #include "../utils/request.hpp"
 #include "../utils/response.hpp"
+#include "../utils/template_parser.hpp"
 #include "route.hpp"
 #include <exception>
 #include <string>
 #include <vector>
+
+class TemplateParser;
 
 class RequestHandler {
 public:
@@ -33,6 +36,16 @@ class ShowImage : public ShowFile {
 
 public:
   ShowImage(std::string _filePath);
+};
+
+class TemplateHandler : public RequestHandler {
+  std::string filePath;
+  TemplateParser *parser;
+
+public:
+  TemplateHandler(std::string _filePath);
+  Response *callback(Request *req);
+  virtual std::map<std::string, std::string> handle(Request *req);
 };
 
 class Server {

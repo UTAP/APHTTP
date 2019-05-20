@@ -330,3 +330,22 @@ void Server::setNotFoundErrPage(std::string notFoundErrPage) {
 }
 
 RequestHandler::~RequestHandler() {}
+
+TemplateHandler::TemplateHandler(string _filePath) {
+  filePath = _filePath;
+  parser = new TemplateParser(filePath);
+}
+
+Response *TemplateHandler::callback(Request *req) {
+  map<string, string> context;
+  context = this->handle(req);
+  Response *res = new Response;
+  res->setHeader("Content-Type", "text/html");
+  res->setBody(parser->getHtml(context));
+  return res;
+}
+
+map<string, string> TemplateHandler::handle(Request *req) {
+  map<string, string> context;
+  return context;
+}

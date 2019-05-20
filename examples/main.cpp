@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
     server.get("/rand", new RandomNumberHandler());
     server.get("/home.png", new ShowImage("static/home.png"));
     server.get("/", new ShowPage("static/home.html"));
+    server.get("/colors", new ColorHandler("static/colors.html"));
     server.run();
   } catch (Server::Exception e) {
     cerr << e.getMessage() << endl;
