@@ -1,5 +1,6 @@
 #ifndef __UTILILITES__
 #define __UTILILITES__
+#include <cstring>
 #include <map>
 #include <string>
 #include <vector>
@@ -33,6 +34,7 @@ int findSubStrPosition(std::string &str, std::string const &subStr,
 int writeObjectToFile(const char *object, int sizem,
                       std::string const &filePath);
 int writeToFile(std::string const &str, std::string const &filePath);
+int readMapFromFile(std::string fname, std::map<std::string, std::string> *m);
 
 cimap getCimapFromString(std::string);
 #endif
