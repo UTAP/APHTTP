@@ -1,4 +1,5 @@
 #include "template_parser.hpp"
+#include <map>
 using namespace std;
 
 int TemplateParser::lastParserNum = 0;
@@ -16,8 +17,8 @@ TemplateParser::TemplateParser(string _filePath) {
   makeExecutableTemplate();
 }
 
-string TemplateParser::getHtml(Request *_req) {
-  req = _req;
+string TemplateParser::getHtml(map<string, string> _context) {
+  TemplateUtils::writeMapToFile(outputFolder + "/" + mapFile, &_context);
   return runGeneratedCode();
 }
 
@@ -74,14 +75,14 @@ void TemplateParser::makeExecutableTemplate() {
 void TemplateParser::makeLocalTemplate() {
   string templateContent = readFile(filePath);
   if (writeToFile(templateContent,
-                   outputFolder + "/" + localTemplate(parserNum)) < 0)
+                  outputFolder + "/" + localTemplate(parserNum)) < 0)
     throw Server::Exception("Can not write template to local " + outputFolder +
                             "folder");
 }
 
 void TemplateParser::generateCode() {
   addReadFromTemplateToCode();
-  addReqToCode();
+  addContextMapToCode();
   addIncludesToCode();
   addReturnToCode();
 }
@@ -91,14 +92,13 @@ void TemplateParser::compileCode() {
     throw Server::Exception("Can not write generated template code!");
 
   string cmd = "mkdir -p " + outputFolder + " &&" + cc + " " + toCompileFile +
-               " " + requestClassPath + " " + utilitiesPath + " -o " +
-               outputFolder + "/" + programName + "&& rm -f " + toCompileFile;
+               " " + utilitiesPath + " -o " + outputFolder + "/" + programName;
+  //  "&& rm -f " + toCompileFile;
   string error = "Can not compile template " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 }
 
 string TemplateParser::runGeneratedCode() {
-  Request::serializeToFile(req, outputFolder + "/" + reqFile);
 
   string cmd =
       "./" + outputFolder + "/" + programName + " " + " > " + staticTemplate;
@@ -117,7 +117,8 @@ string TemplateParser::runGeneratedCode() {
 void TemplateParser::addIncludesToCode() {
   string include = "#include <iostream>\n";
   include += "#include <string>\n";
-  include += "#include \"" + requestClassHeaderPath + "\"\n";
+  include += "#include <map>\n";
+  include += "#include <cstring>\n";
   include += "#include \"" + utilitiesHeaderPath + "\"\n";
   include += "using namespace std;\n";
   code = include + "int main(int argc, char const *argv[])\n{\n" + code + "\n";
@@ -130,11 +131,10 @@ void TemplateParser::addReadFromTemplateToCode() {
 
 void TemplateParser::addReturnToCode() { code += "return 0;\n}\n"; }
 
-void TemplateParser::addReqToCode() {
-  string reqCode = "Request *request = new Request();\n";
-  reqCode += "Request::deserializeFromFile(request, \"" + outputFolder + "/" +
-             reqFile + "\");\n";
-  code = reqCode + code;
+void TemplateParser::addContextMapToCode() {
+  string mapCode = "std::map<std::string, std::string> context;\n";
+  mapCode += "readMapFromFile(\"" + outputFolder + "/" + mapFile + "\", &context);\n";
+  code = mapCode + code;
 }
 
 TemplateParser::~TemplateParser() {
@@ -162,4 +162,24 @@ void TemplateParser::TemplateUtils::runSystemCommand(string command,
   if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
     throw Server::Exception(error);
   }
+}
+
+int TemplateParser::TemplateUtils::writeMapToFile(
+    std::string fname, std::map<std::string, std::string> *m) {
+  int count = 0;
+  if (m->empty())
+    return 0;
+
+  FILE *fp = fopen(fname.c_str(), "w");
+  if (!fp)
+    return -errno;
+
+  for (std::map<std::string, std::string>::iterator it = m->begin();
+       it != m->end(); it++) {
+    fprintf(fp, "%s=%s\n", it->first.c_str(), it->second.c_str());
+    count++;
+  }
+
+  fclose(fp);
+  return count;
 }

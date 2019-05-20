@@ -3,21 +3,21 @@
 #include "../server/server.hpp"
 #include "../utils/request.hpp"
 #include "../utils/utilities.hpp"
+#include <cstring>
 #include <iostream>
+#include <map>
 #include <string>
 
 const std::string beginCodeBlockTag = "<%";
 const std::string endCodeBlockTag = "%>";
-const std::string requestClassHeaderPath = "utils/request.hpp";
 const std::string utilitiesHeaderPath = "utils/utilities.hpp";
-const std::string requestClassPath = "utils/request.cpp";
 const std::string utilitiesPath = "utils/utilities.cpp";
 const std::string cc = "g++ -std=c++11 -Wall -pedantic";
 const std::string compileDirectory = "templateCompile";
 const std::string toCompileFile = "compiled.cpp";
 const std::string staticTemplate = "staticTemplate.html";
 const std::string outputFolder = ".template";
-const std::string reqFile = "req.txt";
+const std::string mapFile = "map.txt";
 const std::string localTemplate(const int parserNum);
 
 class TemplateParser {
@@ -26,7 +26,7 @@ private:
   int parserNum;
   std::string filePath;
   std::string code;
-  Request *req;
+  std::map<std::string, std::string> context;
   int variableCount;
   std::string html;
   std::string programName;
@@ -40,7 +40,7 @@ private:
   void addIncludesToCode();
   void addReadFromTemplateToCode();
   void addReturnToCode();
-  void addReqToCode();
+  void addContextMapToCode();
   std::string runGeneratedCode();
   void makeExecutableTemplate();
   void makeLocalTemplate();
@@ -50,12 +50,14 @@ private:
   class TemplateUtils {
   public:
     static void runSystemCommand(std::string command, std::string errorMessage);
+    static int writeMapToFile(std::string fname,
+                              std::map<std::string, std::string> *m);
   };
 
 public:
   TemplateParser(std::string _filePath);
   ~TemplateParser();
-  std::string getHtml(Request *_req);
+  std::string getHtml(std::map<std::string, std::string> _context);
 };
 
 #endif
