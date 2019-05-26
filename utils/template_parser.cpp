@@ -25,7 +25,7 @@ string TemplateParser::getHtml(map<string, string> _context) {
 void TemplateParser::parseTemplate() {
   string unparsedTemplate = readFile(filePath);
   int parsePointer = 0;
-  while (parsePointer < unparsedTemplate.size()) {
+  while (parsePointer < (signed int) unparsedTemplate.size()) {
     int begin = findBeginOfCodeBlock(parsePointer, unparsedTemplate);
     int end = findEndOfCodeBlock(parsePointer, unparsedTemplate);
     if (begin < 0)
