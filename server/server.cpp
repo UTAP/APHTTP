@@ -99,7 +99,7 @@ void split(string str, string separator, int max, vector<string> &results) {
 }
 
 Request *parseRawReq(char *headersRaw, size_t length) {
-  Request *req;
+  Request *req = nullptr;
   string boundary;
   string lastFieldKey;
   string lastFieldValue;
@@ -300,7 +300,7 @@ void Server::run() {
       throw Exception("Error on accept: " + string(getSocketError()));
     Response *res = NULL;
     try {
-      char data[BUFSIZE + 1];
+      char* data = new char[BUFSIZE + 1];
       size_t recv_len, recv_total_len = 0;
       Request *req = NULL;
       while (!req) {
@@ -313,12 +313,12 @@ void Server::run() {
         } else
           break;
       }
+      delete[] data;
       if (!recv_total_len) {
         CLOSESOCKET(newsc);
         continue;
       }
       req->log();
-      res = new Response();
       size_t i = 0;
       for (; i < routes.size(); i++) {
         if (routes[i]->isMatch(req->getMethod(), req->getPath())) {
