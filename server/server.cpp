@@ -39,7 +39,7 @@
 #define GETSOCKETERRNO() (errno)
 #endif
 
-const char* getSocketError() {
+static const char* getSocketError() {
 #ifdef _WIN32
     static char message[256];
     message[0] = '\0';
