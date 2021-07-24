@@ -207,40 +207,17 @@ cimap getCimapFromString(std::string str) {
   return m;
 }
 int readMapFromFile(std::string fname, std::map<std::string, std::string> *m) {
-  int count = 0;
-
-  FILE *fp = fopen(fname.c_str(), "r");
-  if (!fp)
+  std::ifstream inputStream(fname);
+  if (!inputStream.is_open())
     return -errno;
 
-  m->clear();
-
-  char *buf = 0;
-  size_t buflen = 0;
-
-  while (getline(&buf, &buflen, fp) > 0) {
-    char *nl = strchr(buf, '\n');
-    if (nl == NULL)
-      continue;
-    *nl = 0;
-
-    char *sep = strchr(buf, '=');
-    if (sep == NULL)
-      continue;
-    *sep = 0;
-    sep++;
-
-    std::string s1 = buf;
-    std::string s2 = sep;
-
-    (*m)[s1] = s2;
-
-    count++;
+  std::string line;
+  while (std::getline(inputStream, line)) {
+    auto tokens = tokenize(line, '=');
+    //     KEY         VALUE
+    (*m)[tokens[0]] = tokens[(tokens.size() < 2) ? 0 : 1];
   }
 
-  if (buf)
-    free(buf);
-
-  fclose(fp);
-  return count;
+  inputStream.close();
+  return (*m).size();
 }
