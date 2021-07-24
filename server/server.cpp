@@ -361,23 +361,24 @@ Server::Exception::Exception(const string msg) { message = msg; }
 
 string Server::Exception::getMessage() { return message; }
 
-ShowFile::ShowFile(string _filePath, string _fileType) {
+ShowFile::ShowFile(string _filePath, string _fileType, bool _binary) {
   filePath = _filePath;
   fileType = _fileType;
+  binary = _binary;
 }
 
 Response *ShowFile::callback(Request *req) {
   Response *res = new Response;
   res->setHeader("Content-Type", fileType);
-  res->setBody(readFile(filePath.c_str()));
+  res->setBody(readFile(filePath.c_str(), binary));
   return res;
 }
 
 ShowPage::ShowPage(string filePath)
-    : ShowFile(filePath, "text/" + getExtension(filePath)) {}
+    : ShowFile(filePath, "text/" + getExtension(filePath), false) {}
 
 ShowImage::ShowImage(string filePath)
-    : ShowFile(filePath, "image/" + getExtension(filePath)) {}
+    : ShowFile(filePath, "image/" + getExtension(filePath), true) {}
 
 void Server::setNotFoundErrPage(std::string notFoundErrPage) {
   delete notFoundHandler;

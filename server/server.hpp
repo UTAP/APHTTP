@@ -26,9 +26,10 @@ public:
 class ShowFile : public RequestHandler {
   std::string filePath;
   std::string fileType;
+  bool binary;
 
 public:
-  ShowFile(std::string filePath, std::string fileType);
+  ShowFile(std::string filePath, std::string fileType, bool binary);
   Response *callback(Request *req);
 };
 

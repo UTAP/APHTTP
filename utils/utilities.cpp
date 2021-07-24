@@ -23,8 +23,11 @@ bool comp::operator()(const string &lhs, const string &rhs) const {
   return toLowerCase(lhs) < toLowerCase(rhs);
 }
 
-string readFile(const char *filename) {
-  ifstream infile(filename);
+string readFile(const char *filename, bool binary) {
+  ifstream infile;
+  if (binary) infile.open(filename, infile.binary);
+  else infile.open(filename);
+
   if (!infile.is_open()) return string();
 
   infile.seekg(0, infile.end);
@@ -42,7 +45,7 @@ string readFile(const char *filename) {
   return s;
 }
 
-string readFile(string filename) { return readFile(filename.c_str()); }
+string readFile(string filename, bool binary) { return readFile(filename.c_str(), binary); }
 
 vector<string> split(string s, string delimiter, bool trim) {
   vector<string> tokens;
