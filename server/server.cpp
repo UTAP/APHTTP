@@ -43,8 +43,8 @@ static const char* getSocketError() {
 #ifdef _WIN32
     static char message[256];
     message[0] = '\0';
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-                  NULL, WSAGetLastError(), 0, (LPWSTR)&message, sizeof(message), NULL);
+    FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+                  NULL, WSAGetLastError(), 0, (LPSTR)&message, sizeof(message), NULL);
     char *newline = strrchr(message, '\n');
     if (newline) *newline = '\0';
     return message;

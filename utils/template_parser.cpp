@@ -5,7 +5,7 @@ using namespace std;
 static std::string mkdirNoErrors(const std::string& dirName) {
 //do not error if dir already exists (-p flag on linux)
 #ifdef _WIN32
-  return ("(if not exist \"" + dirName + "\"" + SysCmd::mkdir + "\"" + dirName + "\")");
+  return ("(if not exist \"" + dirName + "\" " + SysCmd::mkdir + "\"" + dirName + "\")");
 #else
   return (SysCmd::mkdir + "-p \"" + dirName + "\"");
 #endif
