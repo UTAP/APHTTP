@@ -18,7 +18,7 @@ const std::string fileExtention = ".exe";
 #else
 const std::string rm = "rm -f ";
 const std::string programStart = "./";
-const std::string mkdir = "mkdir -p ";
+const std::string mkdir = "mkdir ";
 const std::string slash = "/";
 const std::string fileExtention = ".o";
 #endif

@@ -2,6 +2,15 @@
 #include <map>
 using namespace std;
 
+static std::string mkdirNoErrors(const std::string& dirName) {
+//do not error if dir already exists (-p flag on linux)
+#ifdef _WIN32
+  return ("(if not exist \"" + dirName + "\"" + SysCmd::mkdir + "\"" + dirName + "\")");
+#else
+  return (SysCmd::mkdir + "-p \"" + dirName + "\"");
+#endif
+}
+
 int TemplateParser::lastParserNum = 0;
 const std::string localTemplate(const int parserNum) {
   return "local" + std::to_string(parserNum) + ".html";
@@ -91,7 +100,7 @@ void TemplateParser::compileCode() {
   if (writeToFile(code, toCompileFile) < 0)
     throw Server::Exception("Can not write generated template code!");
 
-  string cmd = SysCmd::mkdir + outputFolder + " && " + cc + " " + toCompileFile +
+  string cmd = mkdirNoErrors(outputFolder) + " && " + cc + " " + toCompileFile +
                " " + utilitiesPath + " -o " + outputFolder + SysCmd::slash + programName +
                "&& " + SysCmd::rm + toCompileFile;
   string error = "Can not compile template " + filePath;
