@@ -9,6 +9,12 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+typedef unsigned SOCKET;
+#else
+typedef int SOCKET;
+#endif
+
 class TemplateParser;
 
 class RequestHandler {
@@ -68,7 +74,7 @@ public:
   };
 
 private:
-  int sc;
+  SOCKET sc;
   int port;
   std::vector<Route *> routes;
   RequestHandler *notFoundHandler;

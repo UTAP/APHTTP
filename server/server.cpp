@@ -1,20 +1,57 @@
 #include "server.hpp"
-#include "../utils/utilities.hpp"
-#include <algorithm>
-#include <dirent.h>
+
 #include <errno.h>
-#include <fstream>
-#include <iostream>
 #include <limits.h>
-#include <map>
-#include <netinet/in.h>
-#include <sstream>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
+
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <sstream>
+
+#include "../utils/utilities.hpp"
+
+
+#ifdef _WIN32
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501 //win xp
+#endif
+#include <winsock2.h>
+#include <Ws2tcpip.h>
+#else
+//POSIX sockets
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h> //close()
+#endif
+
+#ifdef _WIN32
+#define ISVALIDSOCKET(s) ((s) != INVALID_SOCKET)
+#define CLOSESOCKET(s) closesocket(s)
+#define GETSOCKETERRNO() (WSAGetLastError())
+#else
+#define ISVALIDSOCKET(s) ((s) >= 0)
+#define CLOSESOCKET(s) close(s)
+#define GETSOCKETERRNO() (errno)
+#endif
+
+const char* getSocketError() {
+#ifdef _WIN32
+    static char message[256];
+    message[0] = '\0';
+    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+                  NULL, WSAGetLastError(), 0, (LPWSTR)&message, sizeof(message), NULL);
+    char *newline = strrchr(message, '\n');
+    if (newline) *newline = '\0';
+    return message;
+#else
+    return strerror(errno);
+#endif
+}
 
 using namespace std;
 
@@ -206,20 +243,34 @@ Request *parseRawReq(char *headersRaw, size_t length) {
 }
 
 Server::Server(int _port) : port(_port) {
+#ifdef _WIN32
+  WSADATA wsa_data;
+  int initializeResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+  if (initializeResult != 0) {
+    throw Exception("Error: WinSock WSAStartup failed. errno: " + to_string(GETSOCKETERRNO()));
+  }
+#endif
+
   notFoundHandler = new NotFoundHandler();
 
   sc = socket(AF_INET, SOCK_STREAM, 0);
   int sc_option = 1;
+
+#ifdef _WIN32
+  setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, (char*)&sc_option, sizeof(sc_option));
+#else
   setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, &sc_option, sizeof(sc_option));
-  if (sc < 0)
-    throw Exception("Error on opening socket: " + string(strerror(errno)));
+#endif
+  if (!ISVALIDSOCKET(sc))
+    throw Exception("Error on opening socket: " + string(getSocketError()));
+
   struct sockaddr_in serv_addr;
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = INADDR_ANY;
   serv_addr.sin_port = htons(port);
 
   if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
-    throw Exception("Error on binding: " + string(strerror(errno)));
+    throw Exception("Error on binding: " + string(getSocketError()));
   }
 }
 
@@ -241,12 +292,12 @@ void Server::run() {
   struct sockaddr_in cli_addr;
   socklen_t clilen;
   clilen = sizeof(cli_addr);
-  int newsc;
+  SOCKET newsc;
 
   while (true) {
     newsc = ::accept(sc, (struct sockaddr *)&cli_addr, &clilen);
-    if (newsc < 0)
-      throw Exception("Error on accept: " + string(strerror(errno)));
+    if (!ISVALIDSOCKET(newsc))
+      throw Exception("Error on accept: " + string(getSocketError()));
     Response *res = NULL;
     try {
       char data[BUFSIZE + 1];
@@ -263,7 +314,7 @@ void Server::run() {
           break;
       }
       if (!recv_total_len) {
-        ::close(newsc);
+        CLOSESOCKET(newsc);
         continue;
       }
       req->log();
@@ -289,17 +340,21 @@ void Server::run() {
     delete res;
     int wr = send(newsc, res_data.c_str(), si, 0);
     if (wr != si)
-      throw Exception("Send error: " + string(strerror(errno)));
-    ::close(newsc);
+      throw Exception("Send error: " + string(getSocketError()));
+    CLOSESOCKET(newsc);
   }
 }
 
 Server::~Server() {
   if (sc >= 0)
-    ::close(sc);
+    CLOSESOCKET(sc);
   delete notFoundHandler;
   for (size_t i = 0; i < routes.size(); ++i)
     delete routes[i];
+
+#ifdef _WIN32
+  WSACleanup();
+#endif
 }
 
 Server::Exception::Exception(const string msg) { message = msg; }
