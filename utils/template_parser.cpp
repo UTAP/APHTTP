@@ -10,7 +10,7 @@ const std::string localTemplate(const int parserNum) {
 TemplateParser::TemplateParser(string _filePath) {
   filePath = _filePath;
   variableCount = 0;
-  programName = to_string(TemplateParser::lastParserNum) + ".o";
+  programName = to_string(TemplateParser::lastParserNum) + SysCmd::fileExtention;
   parserNum = TemplateParser::lastParserNum++;
   code = "";
   parseTemplate();
@@ -91,9 +91,9 @@ void TemplateParser::compileCode() {
   if (writeToFile(code, toCompileFile) < 0)
     throw Server::Exception("Can not write generated template code!");
 
-  string cmd = "mkdir -p " + outputFolder + " &&" + cc + " " + toCompileFile +
-               " " + utilitiesPath + " -o " + outputFolder + "/" + programName +
-               "&& rm -f " + toCompileFile;
+  string cmd = SysCmd::mkdir + outputFolder + " && " + cc + " " + toCompileFile +
+               " " + utilitiesPath + " -o " + outputFolder + SysCmd::slash + programName +
+               "&& " + SysCmd::rm + toCompileFile;
   string error = "Can not compile template " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 }
@@ -101,13 +101,13 @@ void TemplateParser::compileCode() {
 string TemplateParser::runGeneratedCode() {
 
   string cmd =
-      "./" + outputFolder + "/" + programName + " " + " > " + staticTemplate;
+      SysCmd::programStart + outputFolder + SysCmd::slash + programName + " " + " > " + staticTemplate;
   string error = "Error in running template  " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 
   string html = readFile(staticTemplate);
 
-  cmd = "rm -f " + staticTemplate;
+  cmd = SysCmd::rm + staticTemplate;
   error = "Error in deleting static template for  " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 
@@ -146,14 +146,14 @@ TemplateParser::~TemplateParser() {
 }
 
 void TemplateParser::deleteExecutable() {
-  string cmd = "rm -f " + outputFolder + "/" + programName;
+  string cmd = SysCmd::rm + outputFolder + SysCmd::slash + programName;
   string error = "Error in deleting executable file at  " + outputFolder + "/" +
                  programName;
   TemplateUtils::runSystemCommand(cmd, error);
 }
 
 void TemplateParser::deleteLocalTemplate() {
-  string cmd = "rm -f " + outputFolder + "/" + localTemplate(parserNum);
+  string cmd = SysCmd::rm + outputFolder + SysCmd::slash + localTemplate(parserNum);
   string error = "Error in deleting local template at  " + outputFolder + "/" +
                  localTemplate(parserNum);
   TemplateUtils::runSystemCommand(cmd, error);
@@ -162,9 +162,15 @@ void TemplateParser::deleteLocalTemplate() {
 void TemplateParser::TemplateUtils::runSystemCommand(string command,
                                                      string error) {
   int ret = system(command.c_str());
+#ifdef _WIN32
+  if(ret != 0) {
+      throw Server::Exception(error);
+  }
+#else
   if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
     throw Server::Exception(error);
   }
+#endif
 }
 
 int TemplateParser::TemplateUtils::writeMapToFile(
