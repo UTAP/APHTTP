@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     server.get("/", new ShowPage("static/home.html"));
     server.get("/colors", new ColorHandler("template/colors.html"));
     server.run();
-  } catch (Server::Exception e) {
+  } catch (const Server::Exception& e) {
     cerr << e.getMessage() << endl;
   }
 }

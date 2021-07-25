@@ -234,7 +234,7 @@ Request *parseRawReq(char *headersRaw, size_t length) {
       } break;
       }
     }
-  } catch (Server::Exception) {
+  } catch (const Server::Exception&) {
     throw;
   } catch (...) {
     throw Server::Exception("Error on parsing request");
@@ -330,7 +330,7 @@ void Server::run() {
         res = notFoundHandler->callback(req);
       }
       delete req;
-    } catch (Exception exc) {
+    } catch (const Exception& exc) {
       delete res;
       res = ServerErrorHandler::callback(exc.getMessage());
     }
@@ -359,7 +359,7 @@ Server::~Server() {
 
 Server::Exception::Exception(const string msg) { message = msg; }
 
-string Server::Exception::getMessage() { return message; }
+string Server::Exception::getMessage() const { return message; }
 
 ShowFile::ShowFile(string _filePath, string _fileType) {
   filePath = _filePath;

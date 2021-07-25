@@ -67,7 +67,7 @@ public:
   public:
     Exception() {}
     Exception(const std::string);
-    std::string getMessage();
+    std::string getMessage() const;
 
   private:
     std::string message;
