@@ -23,11 +23,9 @@ bool comp::operator()(const string &lhs, const string &rhs) const {
   return toLowerCase(lhs) < toLowerCase(rhs);
 }
 
-string readFile(const char *filename, bool binary) {
+string readFile(const char *filename) {
   ifstream infile;
-  if (binary) infile.open(filename, infile.binary);
-  else infile.open(filename);
-
+  infile.open(filename, infile.binary);
   if (!infile.is_open()) return string();
 
   infile.seekg(0, infile.end);
@@ -45,7 +43,7 @@ string readFile(const char *filename, bool binary) {
   return s;
 }
 
-string readFile(string filename, bool binary) { return readFile(filename.c_str(), binary); }
+string readFile(string filename) { return readFile(filename.c_str()); }
 
 vector<string> split(string s, string delimiter, bool trim) {
   vector<string> tokens;
@@ -186,7 +184,7 @@ int findSubStrPosition(std::string &str, std::string const &subStr,
 int writeObjectToFile(const char *object, int size,
                       std::string const &filePath) {
   ofstream file;
-  file.open(filePath, fstream::out);
+  file.open(filePath, fstream::binary);
   if (!file.is_open())
     return -1;
   file.write(object, size);
