@@ -247,7 +247,7 @@ Server::Server(int _port) : port(_port) {
   WSADATA wsa_data;
   int initializeResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
   if (initializeResult != 0) {
-    throw Exception("Error: WinSock WSAStartup failed. errno: " + to_string(GETSOCKETERRNO()));
+    throw Exception("Error: WinSock WSAStartup failed: " + string(getSocketError()));
   }
 #endif
 
