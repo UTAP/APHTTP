@@ -272,6 +272,8 @@ Server::Server(int _port) : port(_port) {
   if (::bind(sc, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
     throw Exception("Error on binding: " + string(getSocketError()));
   }
+
+  cout << "Listening on port " << _port << "\n";
 }
 
 void Server::get(string path, RequestHandler *handler) {
