@@ -4,6 +4,10 @@ CF=$(STD)
 BUILD_DIR=build
 TEMPLATE_DIR=.template
 
+ifeq ($(OS),Windows_NT)
+	LDLIBS += -l Ws2_32
+endif
+
 all: $(BUILD_DIR) myserver.out
 
 $(BUILD_DIR):
@@ -37,7 +41,7 @@ $(BUILD_DIR)/main.o: examples/main.cpp server/server.hpp utils/utilities.hpp uti
 	$(CC) $(CF) -c examples/main.cpp -o $(BUILD_DIR)/main.o
 
 myserver.out: $(BUILD_DIR)/my_server.o $(BUILD_DIR)/main.o $(BUILD_DIR)/handlers.o $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/template_parser.o
-	$(CC) $(CF) $(BUILD_DIR)/my_server.o $(BUILD_DIR)/main.o $(BUILD_DIR)/handlers.o $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/template_parser.o  -o myserver.out
+	$(CC) $(CF) $(BUILD_DIR)/my_server.o $(BUILD_DIR)/main.o $(BUILD_DIR)/handlers.o $(BUILD_DIR)/response.o $(BUILD_DIR)/request.o $(BUILD_DIR)/utilities.o $(BUILD_DIR)/server.o $(BUILD_DIR)/route.o $(BUILD_DIR)/template_parser.o $(LDLIBS) -o myserver.out
 
 .PHONY: clean
 clean:

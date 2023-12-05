@@ -8,6 +8,22 @@
 #include <map>
 #include <string>
 
+namespace SysCmd {
+#ifdef _WIN32
+const std::string rm = "del ";
+const std::string programStart = "";
+const std::string mkdir = "mkdir ";
+const std::string slash = "\\";
+const std::string fileExtention = ".exe";
+#else
+const std::string rm = "rm -f ";
+const std::string programStart = "./";
+const std::string mkdir = "mkdir ";
+const std::string slash = "/";
+const std::string fileExtention = ".o";
+#endif
+}
+
 const std::string beginCodeBlockTag = "<%";
 const std::string endCodeBlockTag = "%>";
 const std::string utilitiesHeaderPath = "utils/utilities.hpp";

@@ -24,19 +24,22 @@ bool comp::operator()(const string &lhs, const string &rhs) const {
 }
 
 string readFile(const char *filename) {
-  string s = "";
-  char buffer[BUFFER_SIZE];
-  ifstream infile(filename);
+  ifstream infile;
+  infile.open(filename, infile.binary);
+  if (!infile.is_open()) return string();
+
   infile.seekg(0, infile.end);
   size_t length = infile.tellg();
   infile.seekg(0, infile.beg);
-  if (length > sizeof(buffer))
-    length = sizeof(buffer);
+
+  if (length > BUFFER_SIZE)
+    length = BUFFER_SIZE;
+  char* buffer = new char[length + 1];
 
   infile.read(buffer, length);
-  for (size_t i = 0; i < length; i++) {
-    s += buffer[i];
-  }
+
+  string s(buffer, length);
+  delete[] buffer;
   return s;
 }
 
@@ -181,7 +184,7 @@ int findSubStrPosition(std::string &str, std::string const &subStr,
 int writeObjectToFile(const char *object, int size,
                       std::string const &filePath) {
   ofstream file;
-  file.open(filePath, fstream::out);
+  file.open(filePath, fstream::binary);
   if (!file.is_open())
     return -1;
   file.write(object, size);
@@ -207,40 +210,17 @@ cimap getCimapFromString(std::string str) {
   return m;
 }
 int readMapFromFile(std::string fname, std::map<std::string, std::string> *m) {
-  int count = 0;
-
-  FILE *fp = fopen(fname.c_str(), "r");
-  if (!fp)
+  std::ifstream inputStream(fname);
+  if (!inputStream.is_open())
     return -errno;
 
-  m->clear();
-
-  char *buf = 0;
-  size_t buflen = 0;
-
-  while (getline(&buf, &buflen, fp) > 0) {
-    char *nl = strchr(buf, '\n');
-    if (nl == NULL)
-      continue;
-    *nl = 0;
-
-    char *sep = strchr(buf, '=');
-    if (sep == NULL)
-      continue;
-    *sep = 0;
-    sep++;
-
-    std::string s1 = buf;
-    std::string s2 = sep;
-
-    (*m)[s1] = s2;
-
-    count++;
+  std::string line;
+  while (std::getline(inputStream, line)) {
+    auto tokens = tokenize(line, '=');
+    //     KEY         VALUE
+    (*m)[tokens[0]] = tokens[(tokens.size() < 2) ? 0 : 1];
   }
 
-  if (buf)
-    free(buf);
-
-  fclose(fp);
-  return count;
+  inputStream.close();
+  return (*m).size();
 }

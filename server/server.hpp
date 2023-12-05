@@ -9,6 +9,12 @@
 #include <string>
 #include <vector>
 
+#ifdef _WIN32
+typedef unsigned SOCKET;
+#else
+typedef int SOCKET;
+#endif
+
 class TemplateParser;
 
 class RequestHandler {
@@ -61,14 +67,14 @@ public:
   public:
     Exception() {}
     Exception(const std::string);
-    std::string getMessage();
+    std::string getMessage() const;
 
   private:
     std::string message;
   };
 
 private:
-  int sc;
+  SOCKET sc;
   int port;
   std::vector<Route *> routes;
   RequestHandler *notFoundHandler;
