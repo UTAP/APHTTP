@@ -22,7 +22,7 @@ const std::string mkdir = "mkdir ";
 const std::string slash = "/";
 const std::string fileExtention = ".o";
 #endif
-}
+} // namespace SysCmd
 
 const std::string beginCodeBlockTag = "<%";
 const std::string endCodeBlockTag = "%>";

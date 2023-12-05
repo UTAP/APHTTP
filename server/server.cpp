@@ -15,17 +15,16 @@
 
 #include "../utils/utilities.hpp"
 
-
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501 //win xp
+#define _WIN32_WINNT 0x0501 // win xp
 #endif
-#include <winsock2.h>
 #include <Ws2tcpip.h>
+#include <winsock2.h>
 #else
-//POSIX sockets
-#include <sys/socket.h>
+// POSIX sockets
 #include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h> //close()
 #endif
 
@@ -39,17 +38,19 @@
 #define GETSOCKETERRNO() (errno)
 #endif
 
-static const char* getSocketError() {
+static const char *getSocketError() {
 #ifdef _WIN32
-    static char message[256];
-    message[0] = '\0';
-    FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-                  NULL, WSAGetLastError(), 0, (LPSTR)&message, sizeof(message), NULL);
-    char *newline = strrchr(message, '\n');
-    if (newline) *newline = '\0';
-    return message;
+  static char message[256];
+  message[0] = '\0';
+  FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                 NULL, WSAGetLastError(), 0, (LPSTR)&message, sizeof(message),
+                 NULL);
+  char *newline = strrchr(message, '\n');
+  if (newline)
+    *newline = '\0';
+  return message;
 #else
-    return strerror(errno);
+  return strerror(errno);
 #endif
 }
 
@@ -234,7 +235,7 @@ Request *parseRawReq(char *headersRaw, size_t length) {
       } break;
       }
     }
-  } catch (const Server::Exception&) {
+  } catch (const Server::Exception &) {
     throw;
   } catch (...) {
     throw Server::Exception("Error on parsing request");
@@ -247,7 +248,8 @@ Server::Server(int _port) : port(_port) {
   WSADATA wsa_data;
   int initializeResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
   if (initializeResult != 0) {
-    throw Exception("Error: WinSock WSAStartup failed: " + string(getSocketError()));
+    throw Exception("Error: WinSock WSAStartup failed: " +
+                    string(getSocketError()));
   }
 #endif
 
@@ -257,7 +259,8 @@ Server::Server(int _port) : port(_port) {
   int sc_option = 1;
 
 #ifdef _WIN32
-  setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, (char*)&sc_option, sizeof(sc_option));
+  setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, (char *)&sc_option,
+             sizeof(sc_option));
 #else
   setsockopt(sc, SOL_SOCKET, SO_REUSEADDR, &sc_option, sizeof(sc_option));
 #endif
@@ -300,7 +303,7 @@ void Server::run() {
       throw Exception("Error on accept: " + string(getSocketError()));
     Response *res = NULL;
     try {
-      char* data = new char[BUFSIZE + 1];
+      char *data = new char[BUFSIZE + 1];
       size_t recv_len, recv_total_len = 0;
       Request *req = NULL;
       while (!req) {
@@ -330,7 +333,7 @@ void Server::run() {
         res = notFoundHandler->callback(req);
       }
       delete req;
-    } catch (const Exception& exc) {
+    } catch (const Exception &exc) {
       delete res;
       res = ServerErrorHandler::callback(exc.getMessage());
     }

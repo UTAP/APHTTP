@@ -26,7 +26,8 @@ bool comp::operator()(const string &lhs, const string &rhs) const {
 string readFile(const char *filename) {
   ifstream infile;
   infile.open(filename, infile.binary);
-  if (!infile.is_open()) return string();
+  if (!infile.is_open())
+    return string();
 
   infile.seekg(0, infile.end);
   size_t length = infile.tellg();
@@ -34,7 +35,7 @@ string readFile(const char *filename) {
 
   if (length > BUFFER_SIZE)
     length = BUFFER_SIZE;
-  char* buffer = new char[length + 1];
+  char *buffer = new char[length + 1];
 
   infile.read(buffer, length);
 

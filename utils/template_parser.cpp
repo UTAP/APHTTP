@@ -2,10 +2,11 @@
 #include <map>
 using namespace std;
 
-static std::string mkdirNoErrors(const std::string& dirName) {
-//do not error if dir already exists (-p flag on linux)
+static std::string mkdirNoErrors(const std::string &dirName) {
+// do not error if dir already exists (-p flag on linux)
 #ifdef _WIN32
-  return ("(if not exist \"" + dirName + "\" " + SysCmd::mkdir + "\"" + dirName + "\")");
+  return ("(if not exist \"" + dirName + "\" " + SysCmd::mkdir + "\"" +
+          dirName + "\")");
 #else
   return (SysCmd::mkdir + "-p \"" + dirName + "\"");
 #endif
@@ -19,7 +20,8 @@ const std::string localTemplate(const int parserNum) {
 TemplateParser::TemplateParser(string _filePath) {
   filePath = _filePath;
   variableCount = 0;
-  programName = to_string(TemplateParser::lastParserNum) + SysCmd::fileExtention;
+  programName =
+      to_string(TemplateParser::lastParserNum) + SysCmd::fileExtention;
   parserNum = TemplateParser::lastParserNum++;
   code = "";
   parseTemplate();
@@ -34,7 +36,7 @@ string TemplateParser::getHtml(map<string, string> _context) {
 void TemplateParser::parseTemplate() {
   string unparsedTemplate = readFile(filePath);
   int parsePointer = 0;
-  while (parsePointer < (signed int) unparsedTemplate.size()) {
+  while (parsePointer < (signed int)unparsedTemplate.size()) {
     int begin = findBeginOfCodeBlock(parsePointer, unparsedTemplate);
     int end = findEndOfCodeBlock(parsePointer, unparsedTemplate);
     if (begin < 0)
@@ -101,16 +103,16 @@ void TemplateParser::compileCode() {
     throw Server::Exception("Can not write generated template code!");
 
   string cmd = mkdirNoErrors(outputFolder) + " && " + cc + " " + toCompileFile +
-               " " + utilitiesPath + " -o " + outputFolder + SysCmd::slash + programName +
-               "&& " + SysCmd::rm + toCompileFile;
+               " " + utilitiesPath + " -o " + outputFolder + SysCmd::slash +
+               programName + "&& " + SysCmd::rm + toCompileFile;
   string error = "Can not compile template " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 }
 
 string TemplateParser::runGeneratedCode() {
 
-  string cmd =
-      SysCmd::programStart + outputFolder + SysCmd::slash + programName + " " + " > " + staticTemplate;
+  string cmd = SysCmd::programStart + outputFolder + SysCmd::slash +
+               programName + " " + " > " + staticTemplate;
   string error = "Error in running template  " + filePath;
   TemplateUtils::runSystemCommand(cmd, error);
 
@@ -162,7 +164,8 @@ void TemplateParser::deleteExecutable() {
 }
 
 void TemplateParser::deleteLocalTemplate() {
-  string cmd = SysCmd::rm + outputFolder + SysCmd::slash + localTemplate(parserNum);
+  string cmd =
+      SysCmd::rm + outputFolder + SysCmd::slash + localTemplate(parserNum);
   string error = "Error in deleting local template at  " + outputFolder + "/" +
                  localTemplate(parserNum);
   TemplateUtils::runSystemCommand(cmd, error);
@@ -172,8 +175,8 @@ void TemplateParser::TemplateUtils::runSystemCommand(string command,
                                                      string error) {
   int ret = system(command.c_str());
 #ifdef _WIN32
-  if(ret != 0) {
-      throw Server::Exception(error);
+  if (ret != 0) {
+    throw Server::Exception(error);
   }
 #else
   if (WEXITSTATUS(ret) != EXIT_SUCCESS) {
